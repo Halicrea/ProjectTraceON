@@ -34,16 +34,17 @@ int main(){
 		temporary_anchor=trace.str(1);
         // On test le cas
         //regex_search(parameter_cut,cas,regex("(<\()"));
+
         if(parameter_cut[0]=='('){
             a.set_temps();
-            a.set_seq(a.print_temps());
+            a.set_seq(a.parentheses());
 			sequence += a.get_bloc();
 			parameter_cut.erase(0,2);
         } else {		// Sinon on est sur le cas <()>
 			if(parameter_cut[3]=='+'){
 				a.set_temps();
-				a.crochets_plus(temporary_anchor,parameter_cut{4,5})
-				sequence += a.get_bloc;
+				a.crochets_plus();
+				sequence += a.get_bloc();
 				parameter_cut.erase(0,5);
 			} else {break;}
 		}

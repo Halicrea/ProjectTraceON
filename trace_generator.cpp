@@ -1,5 +1,5 @@
 /*#########################################
-## 01/11/2022
+## 03/11/2022
 ## Par Elyna Bouchereau & Florent Boyer
 ## Fichier: trace_generator.cpp
 ###########################################*/
@@ -7,8 +7,11 @@
 #include <iostream>
 #include <string>
 #include "trace_generator.hpp"
+#include "simple_functions.hpp"
 using namespace std;
+//###########################################
 
+//###########################################
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
@@ -33,36 +36,48 @@ void bloc::set_seq(string sequence){
 	seq=sequence;
 }
 
-string bloc::parentheses(string cas1){
+string bloc::parentheses(){
 	// On utilise la fonction print_temps() pour obtenir une séquence de taille temps et sans anchors.
-	this -> set_seq(this -> print_temps());
-	return this -> get_bloc();
+	return this -> print_temps();
 }
 
-void bloc::crochets_plus(string anchor1, string anchor2){
+void bloc::crochets_plus(){
 	// On ajoute à des positions aléatoire des anchors
-	string seq = "";
-	int nbr_anchors;
-	int num_anchor1 = anchor1[1];
-	int num_anchor2 = anchor2[1];
+	string sequence = "";
+	int nbr_anchors = 0;
+	int val_tempo = 0;
+	//int num_anchor1 = anchor1[1];
+	//int num_anchor2 = anchor2[1];
 	bool placing_anchor; 
 
 
 	random_device rd;
 	mt19937 gen(rd());
-	uniform_int_distribution<>distr(num_anchor1,num_anchor2);
+	uniform_int_distribution<>distr(1,temps);
 	nbr_anchors = distr(gen);
+	int anchor_pos[nbr_anchors];
 	//auto gen_bool = bind(uniform_int_distribution<>(0,1),default_random_engine());
 
+	for (int i=0;i<nbr_anchors;i++){
+		val_tempo=uniform_int_distribution<>{1,temps}(gen);
+		while (find(anchor_pos,val_tempo)){
+			val_tempo==uniform_int_distribution<>{1,temps}(gen);
+		}
+		anchor_pos[i]=val_tempo;
+	}
+	quickSort(anchor_pos,0,nbr_anchors);
+
+	/*
 	for (int i=0;i<temps;i++){	
 		placing_anchor=uniform_int_distribution<>{0,1}(gen);
 		if (placing_anchor){
-			seq += 'E';
-			seq += distr(gen);
+			sequence += 'E';
+			sequence += to_string(nbr_anchors);
 		} else {
-			seq += '-';
+			sequence += '-';
 		}
 	} 
+	*/
 	this -> set_seq(sequence);
 	
 }
@@ -72,43 +87,3 @@ string bloc::get_bloc(){
 	string sequence=seq;
 	return sequence;
 }
-
-
-
-/*
-	Pour parcourir l'expression de génération de traces.
-*/
-/*
-while (arg[i]!=S){
-	if (arg[i] == "("){
-		for (i=i;i<i_max;i++){
-			cout << " ";
-		}
-	} else {
-
-	}
-}
-*/
-
-/*
-	Generateur au fur et a mesure
-*/
-/*
-for (i=0;i<(length_trace-1);i++){
-	cout << word[par_i];
-	word++;
-	if (word[par_i]=="("){
-		for (i=i;i<(length_trace-1);i++){
-			cout << " "; 
-		}
-	} else {
-
-	}
-}
-cout << "S" << endl;
-*/
-/*
-bloc::hachage(int tps, string *hache){
-	return (hache[tps])
-}*/
-
