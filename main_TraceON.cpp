@@ -47,7 +47,7 @@ int main(){
 			if(parameter[3]=='+' || parameter[3]=='*'){
 				cout << "Cas +\n";
 				a.set_temps();
-
+				
 				a.crochets_plus_or_star(first_anchor_value,parameter[3]);
 				sequence += a.get_bloc();
 				cout << "Add and erase\n";

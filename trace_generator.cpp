@@ -19,7 +19,7 @@ using namespace std;
 void bloc::set_temps(){
 	random_device rd;
 	mt19937 gen(rd());
-	uniform_int_distribution<> distr(2,10);
+	uniform_int_distribution<> distr(0,10);
 	temps=distr(gen);
 }
 //Dans la suite on veut une fonction qui affiche le temps
@@ -55,6 +55,10 @@ void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
 
 	random_device rd;
 	mt19937 gen(rd());
+	if (temps == 0){
+		this -> set_seq(sequence);
+		return;
+	}
 	if (etoile_croix=='+'){
 		uniform_int_distribution<>distr(1,temps);
 		nbr_anchors = distr(gen);
