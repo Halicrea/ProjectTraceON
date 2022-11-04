@@ -41,7 +41,7 @@ string bloc::parentheses(){
 	return this -> print_temps();
 }
 
-void bloc::crochets_plus(int first_anchor_value, char etoile_croix){
+void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
 	// On ajoute à des positions aléatoire des anchors
 	string sequence = "";
 	int nbr_anchors = 0;

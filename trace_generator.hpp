@@ -20,8 +20,7 @@ class bloc{
 		
 		string hachage(int,int); // Transforme un temps donné en une trace
 		string parentheses(); // Gère le cas: (tr - tr)
-		void crochets_star(); // Gère le cas: <(tr - tr)*>
-		void crochets_plus(int, char); // Gère le cas: <(tr - tr)+>
+		void crochets_plus_or_star(int, char); // Gère le cas: <(tr - tr)+> et <(tr - tr)*>
 		void crochets_pipe(string, string); // Gère le cas: <(tr - tr)E.|..|E.> ou <(tr - tr)E.%12|..|E.%42>
 		void crochets_pipeX(string, string); // Gère le cas: <(tr - tr)E.K.|..|E.K.>
 		
