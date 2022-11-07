@@ -5,7 +5,7 @@
 ###########################################*/
 using namespace std;
 
-bool find(int*,int);
+bool find(int*, int, int);
 
 void quickSort(int*, int, int);
 int partition(int*, int, int);

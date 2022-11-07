@@ -5,12 +5,13 @@
 ###########################################*/
 //#include "alignment.hpp"
 #include "trace_generator.hpp"
+#include <random>
 #include <iostream>
 #include <regex>
 using namespace std;
 
 int main(){
-    string parameter="E2<()+>E8()E12<()E13X3|E89|E41|E14>E46<()*>S";
+    string parameter="E2<()+>E8()E12<()E13X3|E89|E41X5|E14>E46<()*>S";
 	//string parameter;
 	//parameter+=argv[1];
     smatch trace;
@@ -22,12 +23,14 @@ int main(){
 	int first_anchor_value;
     bloc a;
 	string trace_output[20] = {""};
+	int trace_length = 20;
 
     //cout << "Pomme de terre ! \\(@_@)/"<< endl;
 	cout << "Bienvenu sur ce générateur de traces. Utilisations des paramètres: " << parameter << endl;
 
-    while(parameter[0] != "S"[0]){
+	
 
+    while(parameter[0] != "S"[0]){
         // On prend la 1ère trace
         regex_search(parameter,trace,regex("(^E[0-9]*)"));
 		for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
@@ -69,7 +72,10 @@ int main(){
 						trace_output[trace_cpt] += a.get_bloc();
 					}
 					parameter.erase(0,(anchor_list.length()+4));
-				} else {break;}
+				} else {
+					break;
+					
+				}
 				
 			}
 		}

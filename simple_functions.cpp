@@ -9,12 +9,12 @@ using namespace std;
 /*
 	Finding if a value exist in an array.
 */
-bool find(int *table, int val){
+bool find(int *table, int val, int nbr_anchors){
 	bool trouver = false;
 	int table_size;
 	
 	int i = 0;
-	while ((val != table[i]) && (i<sizeof(table)/sizeof(int))){
+	while ((val != table[i]) && (i<nbr_anchors)){
 		i++;
 	}
 	if ((val == table[i])){
@@ -39,7 +39,10 @@ void quickSort(int table[], int left, int right){
 		quickSort(table,left+1,right);
 	}
 }
-
+//###########################################
+/*
+	Partition for Quick sort
+*/
 int partition(int table[], int left, int right){
 	int pivot = table[left];
 	int comp = table[right];

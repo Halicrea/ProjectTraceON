@@ -89,7 +89,7 @@ void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
 
 	for (int i=0;i<nbr_anchors;i++){
 		val_tempo=uniform_int_distribution<>{0,temps-1}(gen);
-		while (find(anchor_pos,val_tempo)){
+		while (find(anchor_pos,val_tempo,nbr_anchors)){
 			val_tempo=uniform_int_distribution<>{0,temps-1}(gen);
 		}
 		anchor_pos[i]=val_tempo;
@@ -143,7 +143,7 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 			cout << "There is an X";
 			i++;
 			anchors_doppelganger = anchor_list[i] - '0'; // - '0' convert char to int
-			for (int j=0;j<anchors_doppelganger;j++){
+			for (int j=1;j<anchors_doppelganger-1;j++){
 				anchors.push_back("E13");
 			}
 			i++;
