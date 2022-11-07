@@ -20,7 +20,7 @@ bool find(int *table, int val){
 	if ((val == table[i])){
 		trouver = true;
 	}
-	cout << "Trouver : "<< trouver << endl;
+	//cout << "Trouver : "<< trouver << endl;
 	return trouver;
 }
 
