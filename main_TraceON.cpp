@@ -9,39 +9,40 @@
 #include <iostream>
 #include <regex>
 using namespace std;
-
-int main(){
-    string parameter="E2<()+>E8()E12<()E13X3|E89|E41X5|E14>E46<()*>S";
-	//string parameter;
-	//parameter+=argv[1];
-    smatch trace;
-    smatch cas_1,cas_2;
-	string anchor_list = "";
-	string test_cas = "";
-    string sequence = "";
-	string temporary_anchor = "";
+//#######################################################################################//
+int main(int argc, char *argv[]){ // Use argv to pass the expression as parameter
+	string parameter;
+	parameter = argv[1];
+    smatch trace, cas_1, cas_2;
+	string anchor_list;
+	string test_cas;
+    string sequence;
+	string temporary_anchor;
 	int first_anchor_value;
     bloc a;
+
 	string trace_output[20] = {""};
 	int trace_length = 20;
 
-    //cout << "Pomme de terre ! \\(@_@)/"<< endl;
-	cout << "Bienvenu sur ce générateur de traces. Utilisations des paramètres: " << parameter << endl;
-
-	
-
+	cout << "Bienvenu sur ce générateur de traces.\n";
+	cout << "Utilisations des paramètres: " << parameter << endl;
     while(parameter[0] != "S"[0]){
-        // On prend la 1ère trace
+        // We find and take the first anchor by using regex
         regex_search(parameter,trace,regex("(^E[0-9]*)"));
+		// For number of trace, we add to each one the first anchor.
 		for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
 			trace_output[trace_cpt] += trace.str(1) + ' ';
 		}
 
+		// To pass the anchor if needed in cases +, *, |... and then take it's value
 		temporary_anchor=trace.str(1);
 		first_anchor_value = atoi(temporary_anchor.substr(1,temporary_anchor.length()-1).c_str());
-        // On test le cas
+        
+		// We remove the anchor from the expression string
 		parameter.erase(0,trace.str(1).length());
 
+		// We test the different cases
+		//########################	The first case: ()	##########################
         if(parameter[0]=='('){
 			for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
 	            a.set_temps();
@@ -49,7 +50,9 @@ int main(){
 				trace_output[trace_cpt] += a.get_bloc();
 			}
 			parameter.erase(0,2);
-        } else {		// Sinon on est sur le cas <()>
+
+		//########################	Else we are on case: <()>	##################
+        } else {
 			if(parameter[3]=='+' || parameter[3]=='*'){
 				cout << "Cas +\n";
 				for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
@@ -57,7 +60,7 @@ int main(){
 					a.crochets_plus_or_star(first_anchor_value,parameter[3]);
 					trace_output[trace_cpt] += a.get_bloc();
 				}
-				cout << "Add and erase\n";
+				//cout << "Add and erase\n";
 				parameter.erase(0,5);
 			} else {
 				regex_search(parameter,cas_1,regex("(E[0-9]*\\|)"));
@@ -82,6 +85,7 @@ int main(){
 
         //cout << "Paramètre coupé: " << parameter << endl;
     }
+	//########################	At the end we add: S	##########################
     for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
 		trace_output[trace_cpt] += "S";
 		cout << trace_output[trace_cpt] << endl;

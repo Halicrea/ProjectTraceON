@@ -6,6 +6,7 @@
 #include "simple_functions.hpp"
 #include <iostream>
 using namespace std;
+//#######################################################################################//
 /*
 	Finding if a value exist in an array.
 */
@@ -24,7 +25,7 @@ bool find(int *table, int val, int nbr_anchors){
 	return trouver;
 }
 
-//###########################################
+//#######################################################################################//
 /*
 	Quick sort
 */
@@ -39,7 +40,7 @@ void quickSort(int table[], int left, int right){
 		quickSort(table,left+1,right);
 	}
 }
-//###########################################
+//#######################################################################################//
 /*
 	Partition for Quick sort
 */

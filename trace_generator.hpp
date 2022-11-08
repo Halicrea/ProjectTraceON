@@ -4,26 +4,25 @@
 ## Fichier: trace_generator.hpp
 ###########################################*/
 #include <string>
-using namespace std;
 
 class bloc{
 	private:
 		int temps;
-		string char_fin;
-		string seq;
+		std::string char_fin;
+		std::string seq;
 		int hache;
-		string print_temps();
+		std::string print_temps();
 	public:
 		void set_temps();
-		void set_seq(string);
-		void set_ancre_fin(string);
+		void set_seq(std::string);
+		void set_ancre_fin(std::string);
 		
-		string hachage(int,int); // Transforme un temps donné en une trace
-		string parentheses(); // Gère le cas: (tr - tr)
+		std::string hachage(int,int); // Transforme un temps donné en une trace
+		std::string parentheses(); // Gère le cas: (tr - tr)
 		void crochets_plus_or_star(int, char); // Gère le cas: <(tr - tr)+> et <(tr - tr)*>
-		void crochets_pipe(int, string); // Gère le cas: <(tr - tr)E.|..|E.> ou <(tr - tr)E.K.|..|E.K.>
-		void crochets_pipe_Percentage(string, string); // Gère le cas: <(tr - tr)E.%12|..|E.%42>
+		void crochets_pipe(int, std::string); // Gère le cas: <(tr - tr)E.|..|E.> ou <(tr - tr)E.K.|..|E.K.>
+		void crochets_pipe_Percentage(std::string, std::string); // Gère le cas: <(tr - tr)E.%12|..|E.%42>
 		
-		string get_bloc(); //Nous renvoi le bloc de séquence de longueur semi-aléatoire
+		std::string get_bloc(); //Nous renvoi le bloc de séquence de longueur semi-aléatoire
 
 };

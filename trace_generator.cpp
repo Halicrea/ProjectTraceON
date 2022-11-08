@@ -12,7 +12,7 @@
 using namespace std;
 //###########################################
 
-//###########################################
+//#######################################################################################//
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
@@ -24,7 +24,7 @@ void bloc::set_temps(){
 	temps=distr(gen);
 }
 
-//###########################################
+//#######################################################################################//
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
@@ -38,7 +38,7 @@ string bloc::print_temps(){
 	return seq_tps;
 }
 
-//###########################################
+//######################################################################################//
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
@@ -48,7 +48,7 @@ void bloc::set_seq(string sequence){
 	seq=sequence;
 }
 
-//###########################################
+//#######################################################################################//
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
@@ -58,7 +58,7 @@ string bloc::parentheses(){
 	return this -> print_temps();
 }
 
-//###########################################
+//######################################################################################//
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
@@ -94,18 +94,18 @@ void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
 		}
 		anchor_pos[i]=val_tempo;
 	}
-	cout << "Temps: " << temps<< endl;
-	cout << "Liste non triée: ";
-	for (int i=0; i<nbr_anchors;i++){
+	//cout << "Temps: " << temps<< endl;
+	//cout << "Liste non triée: ";
+	/*for (int i=0; i<nbr_anchors;i++){
 		cout << anchor_pos[i]<< "/";
 	}
-	cout << endl;
+	cout << endl;*/
 	quickSort(anchor_pos,0,nbr_anchors-1);
-	cout << "Liste triée: ";
+	/*cout << "Liste triée: ";
 	for (int i=0; i<nbr_anchors;i++){
 		cout << anchor_pos[i]<< "/";
 	}
-	cout << endl;
+	cout << endl;*/
 	
 	for (int i=0; i<temps;i++){
 		if (anchor_pos[j]==i){
@@ -120,7 +120,7 @@ void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
 	this -> set_seq(sequence);
 }
 
-//###########################################
+//#######################################################################################//
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
@@ -138,9 +138,9 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 
 	int i=0;
 	while (i<anchor_list.length()){
-		cout << anchor_list[i] << "/";
+		//cout << anchor_list[i] << "/";
 		if (anchor_list[i]=='X'){
-			cout << "There is an X";
+			//cout << "There is an X";
 			i++;
 			anchors_doppelganger = anchor_list[i] - '0'; // - '0' convert char to int
 			for (int j=1;j<anchors_doppelganger-1;j++){
@@ -160,7 +160,7 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 		anchors.push_back(anchors_tempo);
 		anchors_tempo="";
 	}
-	cout << endl;
+	//cout << endl;
 	i = 0;
 	while(i < anchors.size()) {
     	//cout << anchors[i] << "/" << i << endl;
@@ -174,7 +174,7 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 	this -> set_seq(sequence);
 }
 
-//###########################################
+//#######################################################################################//
 /*
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
