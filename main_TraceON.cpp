@@ -7,6 +7,7 @@
 #include "trace_generator.hpp"
 #include <random>
 #include <iostream>
+#include <fstream>
 #include <regex>
 using namespace std;
 //#######################################################################################//
@@ -24,11 +25,21 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 	string trace_output[20] = {""};
 	int trace_length = 20;
 
+	// Create and open a text file
+ 	ofstream Trace_file(argv[2]);
+
 	cout << "Bienvenu sur ce générateur de traces.\n";
 	cout << "Utilisations des paramètres: " << parameter << endl;
+
+	// We verify if the first anchor exist (\033[1;31m is used to print error in red)
+	if(!regex_search(parameter,trace,regex("(^E[0-9]*)"))){
+			cout << "\033[1;31m Error, expression doesn't start with an anchor (ex: E1)\033[0m\n";
+			return 1;
+	}
     while(parameter[0] != "S"[0]){
         // We find and take the first anchor by using regex
-        regex_search(parameter,trace,regex("(^E[0-9]*)"));
+		regex_search(parameter,trace,regex("(^E[0-9]*)"));
+
 		// For number of trace, we add to each one the first anchor.
 		for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
 			trace_output[trace_cpt] += trace.str(1) + ' ';
@@ -53,6 +64,11 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 
 		//########################	Else we are on case: <()>	##################
         } else {
+			if(parameter[3]=='>'){
+				cout << "\033[1;31mError in case expression\n";
+				cout << parameter[3] << " instead of +, * or E..|E..\033[0m\n" ;
+				break;
+			}
 			if(parameter[3]=='+' || parameter[3]=='*'){
 				cout << "Cas +\n";
 				for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
@@ -76,6 +92,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 					}
 					parameter.erase(0,(anchor_list.length()+4));
 				} else {
+					cout << "\033[1;31mError in case expression\033[0m\n"; 
 					break;
 					
 				}
@@ -85,11 +102,13 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 
         //cout << "Paramètre coupé: " << parameter << endl;
     }
-	//########################	At the end we add: S	##########################
+
+	//########################	At the end we add S and print to file	##########
     for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
 		trace_output[trace_cpt] += "S";
-		cout << trace_output[trace_cpt] << endl;
+		Trace_file << "Trace_" << trace_cpt+1 << "| " << trace_output[trace_cpt] << endl;
 	}
     
+	Trace_file.close();
     return 0;
 }

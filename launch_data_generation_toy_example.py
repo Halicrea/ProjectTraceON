@@ -5,6 +5,22 @@
 ## Fichier: launch_data_generation_toy_example.py
 #####################################################################
 import subprocess
+import sys
 
-# Using subprocess to launch the executable C++
-subprocess.run(["./main_TraceON", "E2<()+>E8()E12<()E13X3|E89|E41X5|E14>E46<()*>S"])
+##	Choose diffculty based on paramater
+if sys.argv[1] == "1":
+	difficulty = "1) Facile:\n"
+else:
+	difficulty = "2) Difficile:\n"
+
+##	Reading init file:
+# 	Opening file and then
+#	looping through the file
+with open("init.txt","r") as file:
+	for line in file:
+		if line == difficulty:
+			expression=next(file)
+file.close()
+
+## Using subprocess to launch the executable C++
+subprocess.run(["./main_TraceON",expression,sys.argv[2]])

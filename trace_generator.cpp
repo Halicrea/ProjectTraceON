@@ -143,7 +143,7 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 			//cout << "There is an X";
 			i++;
 			anchors_doppelganger = anchor_list[i] - '0'; // - '0' convert char to int
-			for (int j=1;j<anchors_doppelganger-1;j++){
+			for (int j=1;j<anchors_doppelganger;j++){
 				anchors.push_back("E13");
 			}
 			i++;
