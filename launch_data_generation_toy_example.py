@@ -7,7 +7,7 @@
 import subprocess
 import sys
 
-##	Choose diffculty based on paramater
+##	Choose diffculty based on paramater either 1 or 2
 if sys.argv[1] == "1":
 	difficulty = "1) Facile:\n"
 else:
@@ -22,5 +22,5 @@ with open("init.txt","r") as file:
 			expression=next(file)
 file.close()
 
-## Using subprocess to launch the executable C++
+## Using subprocess to launch the executable C++ creating the traces
 subprocess.run(["./main_TraceON",expression,sys.argv[2]])
