@@ -79,22 +79,37 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 				//cout << "Add and erase\n";
 				parameter.erase(0,5);
 			} else {
-				regex_search(parameter,cas_1,regex("(E[0-9]*\\|)"));
+				regex_search(parameter,cas_1,regex("(E[0-9X]*[>\\|])"));
 				test_cas += cas_1.str(1);
-				if(test_cas.back()=='|'){
-					regex_search(parameter,cas_2,regex("([|E0-9X]*\\|E[0-9X]*)"));
-					anchor_list += cas_2.str(1);
-					cout << "Cas |: " << anchor_list << endl;
-					for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
-						a.set_temps();
-						a.crochets_pipe(first_anchor_value,anchor_list);
-						trace_output[trace_cpt] += a.get_bloc();
+				cout << test_cas << endl;
+				switch(test_cas.back()){
+					case '>':{
+						anchor_list += cas_1.str(1); // To stock the match ()
+						anchor_list.pop_back(); 	 // and remove the '>'
+						cout << "Cas |: " << anchor_list << endl;
+						for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
+							a.set_temps();
+							a.crochets_pipe(first_anchor_value,anchor_list);
+							trace_output[trace_cpt] += a.get_bloc();
+						}
+						parameter.erase(0,(anchor_list.length()+4));
 					}
-					parameter.erase(0,(anchor_list.length()+4));
-				} else {
-					cout << "\033[1;31mError in case expression\033[0m\n"; 
-					break;
-					
+						continue;
+					case '|':{
+						regex_search(parameter,cas_2,regex("([|E0-9X]*\\|E[0-9X]*)"));
+						anchor_list += cas_2.str(1);
+						cout << "Cas |: " << anchor_list << endl;
+						for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
+							a.set_temps();
+							a.crochets_pipe(first_anchor_value,anchor_list);
+							trace_output[trace_cpt] += a.get_bloc();
+						}
+						parameter.erase(0,(anchor_list.length()+4));
+					}
+						continue;
+					default:
+						cout << "\033[1;31mError in case expression\033[0m\n";
+						break;
 				}
 				
 			}

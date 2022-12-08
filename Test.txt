@@ -1,0 +1,2 @@
+Trace_1| E2 E4 E4 E3 E8 - - - - - E12 E13 - - E13 E13 - - E13 - E13 E46 E74 E76 E77 E83 E53 E55 E53 E51 S
+Trace_2| E2 E2 E8 - - - - - E12 - - E13 E13 E13 - E13 E13 E46 E50 - - S

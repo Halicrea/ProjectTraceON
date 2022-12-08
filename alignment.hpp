@@ -31,8 +31,17 @@ class Class_align{
 		void print_M_match (int, int);
 };
 
+class Multi_Align{
+	int number_of_traces;
+	Type_trace* trace_list;
+	public:
+		Multi_Align();
+		void init_trace_list(string file_name);
+		void multiple_alignment(float seuil);
+};
+
+
 //************************************************************
-int input();
 
 Type_trace trace_to_dict(string seq);
 

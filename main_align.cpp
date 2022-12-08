@@ -4,6 +4,7 @@
 ## Fichier: main_align.cpp
 ###########################################*/
 #include "alignment.hpp"
+#include "simple_functions.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>

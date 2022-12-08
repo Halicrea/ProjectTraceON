@@ -137,14 +137,18 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 	mt19937 gen(rd());
 
 	int i=0;
+	// Since we need to be find the precedent event if we have a 'X', we use a counter
+	// for each time we add an event. We initialize it at -1 
+	int cpt_event=-1;
 	while (i<anchor_list.length()){
-		//cout << anchor_list[i] << "/";
+		cout << anchor_list[i] << "/";
 		if (anchor_list[i]=='X'){
-			//cout << "There is an X";
+			cout << "There is an X";
 			i++;
 			anchors_doppelganger = anchor_list[i] - '0'; // - '0' convert char to int
+			cout << anchors_doppelganger << "-" << anchors[cpt_event];
 			for (int j=1;j<anchors_doppelganger;j++){
-				anchors.push_back("E13");
+				anchors.push_back(anchors[cpt_event]);
 			}
 			i++;
 			continue;
@@ -158,12 +162,13 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 			i++;
 		}
 		anchors.push_back(anchors_tempo);
+		cpt_event++;
 		anchors_tempo="";
 	}
-	//cout << endl;
+	cout << endl;
 	i = 0;
 	while(i < anchors.size()) {
-    	//cout << anchors[i] << "/" << i << endl;
+    	cout << anchors[i] << "/" << i << endl;
 		if (uniform_int_distribution<>{0,1}(gen)==1){
 			sequence += anchors[i] + " ";
 			i++;

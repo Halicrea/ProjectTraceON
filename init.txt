@@ -4,7 +4,7 @@
 1) Facile:
 E1<()*>E4<()*>E7()S
 2) Difficile:
-E2<()+>E8()E12<()E13X3|E89|E14>E46<()*>S
+E2<()+>E8()E12<()E13X5>E46<()*>S
 
 Nombre_traces:
 20
