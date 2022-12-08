@@ -81,7 +81,6 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 			} else {
 				regex_search(parameter,cas_1,regex("(E[0-9X]*[>\\|])"));
 				test_cas += cas_1.str(1);
-				cout << test_cas << endl;
 				switch(test_cas.back()){
 					case '>':{
 						anchor_list += cas_1.str(1); // To stock the match ()
@@ -94,7 +93,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 						}
 						parameter.erase(0,(anchor_list.length()+4));
 					}
-						continue;
+						break;
 					case '|':{
 						regex_search(parameter,cas_2,regex("([|E0-9X]*\\|E[0-9X]*)"));
 						anchor_list += cas_2.str(1);
@@ -106,10 +105,10 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 						}
 						parameter.erase(0,(anchor_list.length()+4));
 					}
-						continue;
+						break;
 					default:
 						cout << "\033[1;31mError in case expression\033[0m\n";
-						break;
+						return 1;
 				}
 				
 			}
