@@ -22,13 +22,13 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 	int first_anchor_value;
     bloc a;
 
-	string trace_output[20] = {""};
+	int trace_nb = 2;
+	string trace_output[trace_nb] = {""};
 	int trace_length = 20;
 
 	// Create and open a text file
  	ofstream Trace_file(argv[2]);
 
-	cout << "Bienvenu sur ce générateur de traces.\n";
 	cout << "Utilisations des paramètres: " << parameter << endl;
 
 	// We verify if the first anchor exist (\033[1;31m is used to print error in red)
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 		regex_search(parameter,trace,regex("(^E[0-9]*)"));
 
 		// For number of trace, we add to each one the first anchor.
-		for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
+		for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
 			trace_output[trace_cpt] += trace.str(1) + ' ';
 		}
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 		// We test the different cases
 		//########################	The first case: ()	##########################
         if(parameter[0]=='('){
-			for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
+			for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
 	            a.set_temps();
     	        a.set_seq(a.parentheses());
 				trace_output[trace_cpt] += a.get_bloc();
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 			}
 			if(parameter[3]=='+' || parameter[3]=='*'){
 				cout << "Cas +\n";
-				for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
+				for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
 					a.set_temps();
 					a.crochets_plus_or_star(first_anchor_value,parameter[3]);
 					trace_output[trace_cpt] += a.get_bloc();
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 					regex_search(parameter,cas_2,regex("([|E0-9X]*\\|E[0-9X]*)"));
 					anchor_list += cas_2.str(1);
 					cout << "Cas |: " << anchor_list << endl;
-					for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
+					for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
 						a.set_temps();
 						a.crochets_pipe(first_anchor_value,anchor_list);
 						trace_output[trace_cpt] += a.get_bloc();

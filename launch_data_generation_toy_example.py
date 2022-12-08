@@ -7,11 +7,28 @@
 import subprocess
 import sys
 
+## Greating
+print(r"""   ___
+  (o,o)	---|Welcome to this trace generator !|
+ <  .  >	
+---"-"---""")
+
+## Verify if the number of parameter is correct.
+if (len(sys.argv) != 2 and len(sys.argv) != 3):
+	print("\033[1;31mNeeds at least 1 or 2 parameters:")
+	print("- 1st: Difficulty (1 or 2)")
+	print("- 2nd: File output for trace generation\033[0m")
+	exit(1)
+
 ##	Choose diffculty based on paramater either 1 or 2
 if sys.argv[1] == "1":
 	difficulty = "1) Facile:\n"
 else:
-	difficulty = "2) Difficile:\n"
+	if sys.argv[1] == "2":
+		difficulty = "2) Difficile:\n"
+	else:
+		print("\033[1;31mWrong difficulty, 1 for easy and 2 for hard.\033[0m")
+		exit(2)
 
 ##	Reading init file:
 # 	Opening file and then
@@ -23,4 +40,7 @@ with open("init.txt","r") as file:
 file.close()
 
 ## Using subprocess to launch the executable C++ creating the traces
-subprocess.run(["./main_TraceON",expression,sys.argv[2]])
+if len(sys.argv) == 2:
+	subprocess.run(["./main_TraceON",expression,"Test.txt"])
+else:
+	subprocess.run(["./main_TraceON",expression,sys.argv[2]])
