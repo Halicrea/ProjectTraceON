@@ -22,7 +22,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 	int first_anchor_value;
     bloc a;
 
-	int trace_nb = 2;
+	int trace_nb = 20;
 	string trace_output[trace_nb] = {""};
 	int trace_length = 20;
 
