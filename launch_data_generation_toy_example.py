@@ -41,6 +41,6 @@ file.close()
 
 ## Using subprocess to launch the executable C++ creating the traces
 if len(sys.argv) == 2:
-	subprocess.run(["./main_TraceON",expression,"Test.txt"])
+	subprocess.run(["./bin/main_TraceON",expression,"Test.txt"])
 else:
-	subprocess.run(["./main_TraceON",expression,sys.argv[2]])
+	subprocess.run(["./bin/main_TraceON",expression,sys.argv[2]])

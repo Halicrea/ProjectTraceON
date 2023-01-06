@@ -1,23 +1,48 @@
 #for i in $(seq 1 20); do ./main_TraceON ;done
+#######################################################
+#           Editable options   				          #
+#######################################################
+PROGR_NAME	= traceAlign
+CREATE_SEQ	= main_TraceON
 
-## Compulation main_align
-main_align: main_align.cpp alignment.o simple_functions.o
-	g++ -o main_align main_align.cpp alignment.o simple_functions.o
+#######################################################
+#           Folders 					       	      #
+#######################################################
+SRC_DIR		= ./src
+BIN_DIR		= ./bin
+OBJECT_DIR	= ./obj
+
+SRC_LIST	= $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_LIST	= $(BIN_DIR)/$(notdir $(SRC_LIST:.cpp=.o))
+
+BIN			= bin/$(CREATE_SEQ)
+OBJS_GEN	= obj/trace_generator.o obj/simple_functions.o
+OBJS_ALIGN	= obj/alignment.o obj/simple_functions.o
+
+#######################################################
+#           Compilation for the different files  	  #
+#######################################################
+
+
+all: $(BIN)
+
+## Compilation main_align
+#main_align: main_align.cpp $(OBJS_ALIGN)
+#	g++ -o main_align main_align.cpp $(OBJS_ALIGN)
 ## Compilation align
-alignment.o: alignment.cpp alignment.hpp
-	g++ -c alignment.cpp
+#alignment.o: alignment.cpp alignment.hpp
+#	g++ -c alignment.cpp
 
 ## Compilation du main
-main_TraceON: main_TraceON.cpp trace_generator.o simple_functions.o
-	g++ main_TraceON.cpp trace_generator.o simple_functions.o -o main_TraceON
+$(BIN): src/main_TraceON.cpp $(OBJS_GEN)
+	g++ src/main_TraceON.cpp $(OBJS_GEN) -o $@
 
 
 ## Compilation des fichiers de fonctions
-simple_functions.o: simple_functions.cpp
-	g++ -c simple_functions.cpp
+obj/%.o: src/%.cpp
+	g++ -c $< -o $@
 
-trace_generator.o: trace_generator.cpp
-	g++ -c trace_generator.cpp 
-
+clean:
+	rm -r bin/* obj/*
 
 
