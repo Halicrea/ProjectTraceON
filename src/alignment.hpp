@@ -20,6 +20,8 @@ struct Type_trace{
 class Class_align{
 	Type_trace trace_align1;
 	Type_trace trace_align2;
+	int gap_initial = 4;
+	int gap_penalty = 1;
 	int** M;
 	char** M_match;
 	public:
@@ -30,8 +32,8 @@ class Class_align{
 			M_match = matrice_fil_de_fer;
 		}
 		void print_Alignment(Type_trace, Type_trace);
-		void init_matrix_align(int n, int m,int gap_initial, int gap_penalty);
-		void alignment_global_pairwize(vector<int> &Alignment1,vector<int> &Alignment2, int gap_initial, int gap_penalty);
+		void init_matrix_align(int n, int m);
+		void alignment_global_pairwize(vector<int> &Alignment1,vector<int> &Alignment2);
 		void print_matrice(int, int);
 		void print_M_match (int, int);
 };
@@ -43,8 +45,10 @@ class Multi_Align{
 	public:
 		Multi_Align();
 		void init_trace_list(string file_name);
+		//vector<int>** calcul_dissimilarite(vector<Type_trace> trace_list);
 		void multiple_alignment(float seuil,int n);
 		void print_align(vector<Type_trace> trace_align);
+
 };
 
 
@@ -71,3 +75,6 @@ int word_length(int word);
 string word_to_string(int word);
 
 /*void Class_align::print_Alignment(Type_trace trace1, Type_trace trace2);*/
+int difference(vector<int>** D,vector<int>** D_prec, int n);
+vector<int>** calcul_dissimilarite(vector<Type_trace> trace_list);
+void construire_arbre(vector<int>** D, int &n);

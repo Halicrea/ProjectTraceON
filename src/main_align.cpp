@@ -34,8 +34,8 @@ using namespace std;
  **                      **                                 **                    
 */
 int main(){
-	int gap_initial = 4;
-	int gap_penalty = 1;
+	//int gap_initial = 4;
+	//int gap_penalty = 1;
 	string seq1 = "Trace_1| E1 E2 E8 - - - - - E8 E13 - E13 E13 - E89 E14 E15 E26 E22 E24 - E28 - - - E53 - - - - E31 - E49 - - E33 - - E52 E48 - S";
 	Type_trace seq1_sub = trace_to_dict(seq1);
 	string seq2 = "Trace_2| E1 E2 - - E2 E2 - - E2 E2 - E8 - - - E8 E13 E13 E13 E89 - E14 E15 E30 - - E24 - E28 E40 E55 E31 E43 E42 - E61 E35 - E59 E61 E42 E58 S";
@@ -56,7 +56,7 @@ int main(){
 
 	Class_align align_pairwize(seq1_sub,seq2_sub, M, M_match);
 
-	align_pairwize.init_matrix_align(n ,m,gap_initial,gap_penalty);
+	align_pairwize.init_matrix_align(n ,m);
 	cout << "==================================================\n";
 	cout << "Voulez vous afficher la matrice ?(non:0 oui:1) ";
 	if(input() == 1){
@@ -65,7 +65,7 @@ int main(){
 	}
 	vector<int> Alignment1;
 	vector<int> Alignment2;
-	align_pairwize.alignment_global_pairwize(Alignment1,Alignment2,gap_initial,gap_penalty);
+	align_pairwize.alignment_global_pairwize(Alignment1,Alignment2);
 	cout << "## Score: " << M[n][m] << endl;
 	Type_trace Seq_align1;
 	Seq_align1.header = seq1_sub.header;

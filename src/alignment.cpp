@@ -143,7 +143,7 @@ $$$$$$\ $$ |  $$ |$$ |  \$$$$  |      $$ | \_/ $$ |\$$$$$$$ | \$$$$  |$$ |      
                                \______|                                                       
 	Initialise and complete scoring.
 */
-void Class_align::init_matrix_align(int n, int m,int gap_initial, int gap_penalty){
+void Class_align::init_matrix_align(int n, int m){
 	M[0][0] = 0;
 	M_match[0][0] = 'n';
 	char ptr;
@@ -236,7 +236,7 @@ $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |  $$ |        $$$$$$$  |\$$$$$$$ |$$ |$$ |
                   \$$$$$$  |                  $$ |                              
                    \______/                   \__|                              
 */
-void Class_align::alignment_global_pairwize(vector<int> &Alignment1,vector<int> &Alignment2, int gap_initial, int gap_penalty){
+void Class_align::alignment_global_pairwize(vector<int> &Alignment1,vector<int> &Alignment2){
 	//vector<int> Alignment1;
 	//vector<int> Alignment2;
 	int i = trace_align1.sequence.size();
@@ -333,27 +333,135 @@ $$ | \_/ $$ |\$$$$$$  |$$ |  \$$$$  |$$ |       $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |
 	the difference between D_prec and D.
 	The number of paris which we can produce from r elements is: r(r-1)/2
 */
-int difference(int** D,int** D_prec, int n){
+int difference(vector<int>** D,vector<int>** D_prec, int n){
 	int distance = 0; // We initialize the distance between the two matrix
 	for(int i=0; i<n-1;i++){
 		for(int j=i+1;j<n-1;j++){
-			distance = distance + pow(D_prec[i][j]-D[i][j],2);
+			distance = distance + pow((*D_prec[i])[j]-(*D[i])[j],2);
 		}
 	}
 	distance = (2*distance)/n*(n-1);
 	distance = sqrt(distance);
 }
+void create_tringular_matrix(vector<int>** tri_matrix, int n){
+	for(int i=0;i<n;i++){
+		//We go to each row and generate a row the size needed
+		tri_matrix[i] = new vector<int>(i+1);
+		for(int j=0; j<=i;j++){
+			(*tri_matrix[i])[j] = i*j;
+		}
+	}
+}
 //############################################################
-int** calcul_dissimilarite(vector<Type_trace> trace_list){
+vector<int>** calcul_dissimilarite(vector<Type_trace> trace_list){
+	// Number of sequences:
+	int n = trace_list.size();
 
+	// Initialization of a triangular matrix localy before throwing it back.
+	vector<int>** tri_matrix = new vector<int>*[n];
+	for(int i=0;i<n;i++){
+		//We go to each row and generate a row the size needed
+		tri_matrix[i] = new vector<int>(i+1);
+		for(int j=0; j<=i;j++){
+			// For each pair we aligned using the Class_align and it's function. It needed two matrix
+			int n = trace_list[i].sequence.size();
+			int m = trace_list[j].sequence.size();
+			int** M = new int* [n+1];
+			for(int i=0; i< n+1; i++){
+				M[i] = new int [m+1];
+			}
+			char** M_match = new char* [n+1];
+			for(int i=0; i< n+1; i++){
+				M_match[i] = new char [m+1];
+			}
+
+			Class_align align_pairwize(trace_list[i],trace_list[j],M, M_match);
+			align_pairwize.init_matrix_align(n,m);
+			// The alignment score is the last score of the matrix.
+			(*tri_matrix[i])[j] = M[n][m];
+
+			// We can then deallocate memory
+			for(int i=0; i<n; i++){
+				delete M[i];
+				delete M_match[i];
+			}
+			delete[] M;
+			delete[] M_match;
+			
+		}
+	}
+	return tri_matrix;
 }
 
 //############################################################
-void Multi_Align::multiple_alignment(float seuil, int n){
+void find_minimum(vector<int>** D, const int &n, int &i_min, int &j_min){
+	int value = 0;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<(*D[i]).size();j++){
+			if(value<(*D[i])[j]){
+				value = (*D[i])[j];
+				i_min = i; j_min = j;
+			}
+		}
+	}
+}
+void supprimer_ligne(vector<int>** D, const int &r, int n){
+	if (n > r){
+		(*D).erase( (*D).begin() + r );
+	}
+}
+void supprimer_colonne(vector<int>** D, const int &r, int n){
+	for (int i = 0; i < n; ++i){
+		if ((*D)[i].size() > r){
+			(*D)[i].erase((*D)[i].begin() + r);
+  		}
+	}
+}
+int dissim(vector<int>** D, int i_min, int j_min, int i){
+	return
+}
+
+void construire_arbre(vector<int>** D, int &n){
+	vector<int>** D_aux = new vector<int>* [n];
+	D_aux = D;
+	int iter = 1;
+	int i_min,j_min = 0;
+	int k, r;
+	while(iter<n){
+		find_minimum(D_aux,n,i_min,j_min);
+		k = min(i_min,j_min);
+		/*
+			Le nouvel item obtenu par agglomération
+			i0 et j0 sera positionné à l'indice k
+			dans D_aux mis à jour.
+		*/
+		r = max(i_min,j_min);
+		supprimer_colonne(D_aux,r,n);
+		supprimer_ligne(D_aux,r,n);
+		n--;
+		/*
+			Mettre à jour les valeurs de la colonne k
+			et de la ligne k.
+		*/
+		for(int i=0;i<k-1;i++){
+			(*D_aux[i])[k]=dissim(D,i_min,j_min,i);
+		}
+		for(int j=k+1;j<n;j++){
+			if(j!=r){
+				(*D_aux[k])[j]=dissim(D,i_min,j_min,j);
+			}
+		}
+
+	}
+}
+
+//############################################################
+// n le nombre de séquences
+void Multi_Align::multiple_alignment(float seuil,int n){
 	//*** INIT VAR	****
-/*	Type_arbre T,T_prec;
-	int** D;
-	int** D_prec;
+	Type_arbre T,T_prec;
+	vector<int>** D = new vector<int>*[n];
+	vector<int>** D_prec;
 	bool convergence;
 	// List of sequences is define in the class
 	// type_alignment is a vector of traces define in the class: trace_align
@@ -361,7 +469,7 @@ void Multi_Align::multiple_alignment(float seuil, int n){
 	//*** DEBUT		****
 	convergence = false;
 
-	D_prec = new int* [n+1];
+	D_prec = new vector<int>* [n];
 	int i = 1;
 	while(!convergence){
 		if(i==1){
@@ -369,10 +477,20 @@ void Multi_Align::multiple_alignment(float seuil, int n){
 		} else D = calcul_dissimilarite(projection(trace_align));	// We have already done a multiline alignment
 		if(difference(D,D_prec,n) <= seuil){convergence = true; break;}
 		// convergence = false
-		T = construire_arbre(D);
+		construire_arbre(D, n);
 		trace_align = aligner_sequences_ou_projection(T);
 		D_prec = D;
 	}
-	print_align(trace_align);*/
+	print_align(trace_align);
+
+	// Deallocate memory
+	for (int i = 0; i < n; i++) {
+		delete D[i];
+	}
+	delete[] D;
+	for (int i = 0; i < n+1; i++) {
+		delete D_prec[i];
+	}
+	delete[] D_prec;
 }
 

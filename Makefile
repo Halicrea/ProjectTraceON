@@ -2,8 +2,9 @@
 #######################################################
 #           Editable options   				          #
 #######################################################
-PROGR_NAME	= traceAlign
+PROGR_NAME	= main_traceAlign
 CREATE_SEQ	= main_TraceON
+SUBMIT_NAME	= project_TraceON_ElynaB-FlorentB.zip
 
 #######################################################
 #           Folders 					       	      #
@@ -16,6 +17,7 @@ SRC_LIST	= $(wildcard $(SRC_DIR)/*.cpp)
 OBJ_LIST	= $(BIN_DIR)/$(notdir $(SRC_LIST:.cpp=.o))
 
 BIN			= bin/$(CREATE_SEQ)
+BIN2		= bin/$(PROGR_NAME)
 OBJS_GEN	= obj/trace_generator.o obj/simple_functions.o
 OBJS_ALIGN	= obj/alignment.o obj/simple_functions.o
 
@@ -24,14 +26,11 @@ OBJS_ALIGN	= obj/alignment.o obj/simple_functions.o
 #######################################################
 
 
-all: $(BIN)
+all: $(BIN) $(BIN2)
 
 ## Compilation main_align
-#main_align: main_align.cpp $(OBJS_ALIGN)
-#	g++ -o main_align main_align.cpp $(OBJS_ALIGN)
-## Compilation align
-#alignment.o: alignment.cpp alignment.hpp
-#	g++ -c alignment.cpp
+$(BIN2): src/main_align.cpp $(OBJS_ALIGN)
+	g++ -o $@ src/main_align.cpp $(OBJS_ALIGN)
 
 ## Compilation du main
 $(BIN): src/main_TraceON.cpp $(OBJS_GEN)
@@ -42,7 +41,12 @@ $(BIN): src/main_TraceON.cpp $(OBJS_GEN)
 obj/%.o: src/%.cpp
 	g++ -c $< -o $@
 
+## Cleaning the folders with compiled files
 clean:
 	rm -r bin/* obj/*
+
+submit:
+	rm $(SUBMIT_NAME)
+	zip $(SUBMIT_NAME) *
 
 
