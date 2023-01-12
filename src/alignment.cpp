@@ -394,11 +394,16 @@ vector<int>** calcul_dissimilarite(vector<Type_trace> trace_list){
 }
 
 //############################################################
-void find_minimum(vector<int>** D, const int &n, int &i_min, int &j_min){
+/*
+	La méthode utilisée pour calculer la distance entre 2 séquences,
+	donne un score d'autant plus élevé que 2 séquences sont
+	similaires (les évènements et longues séquences sont favorisés).
+*/
+void find_maximum(vector<int>** D, const int &n, int &i_min, int &j_min){
 	int value = 0;
 	for(int i=0;i<n;i++){
 		for(int j=0;j<(*D[i]).size();j++){
-			if(value<(*D[i])[j]){
+			if(value>(*D[i])[j]){
 				value = (*D[i])[j];
 				i_min = i; j_min = j;
 			}
@@ -417,10 +422,13 @@ void supprimer_colonne(vector<int>** D, const int &r, int n){
   		}
 	}
 }
+
 int dissim(vector<int>** D, int i_min, int j_min, int i){
+	//TODO Need a lot of work still
 	return
 }
 
+//TODO Needs to add a way to save the tree and print it
 void construire_arbre(vector<int>** D, int &n){
 	vector<int>** D_aux = new vector<int>* [n];
 	D_aux = D;
@@ -428,7 +436,7 @@ void construire_arbre(vector<int>** D, int &n){
 	int i_min,j_min = 0;
 	int k, r;
 	while(iter<n){
-		find_minimum(D_aux,n,i_min,j_min);
+		find_maximum(D_aux,n,i_min,j_min);
 		k = min(i_min,j_min);
 		/*
 			Le nouvel item obtenu par agglomération
@@ -436,6 +444,7 @@ void construire_arbre(vector<int>** D, int &n){
 			dans D_aux mis à jour.
 		*/
 		r = max(i_min,j_min);
+		//! Thoses operations will probably broke everything
 		supprimer_colonne(D_aux,r,n);
 		supprimer_ligne(D_aux,r,n);
 		n--;
@@ -456,6 +465,7 @@ void construire_arbre(vector<int>** D, int &n){
 }
 
 //############################################################
+// TODO FINISH THIS GODDAMN MOTHERFUCKER
 // n le nombre de séquences
 void Multi_Align::multiple_alignment(float seuil,int n){
 	//*** INIT VAR	****
