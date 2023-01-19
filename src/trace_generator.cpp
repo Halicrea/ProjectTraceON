@@ -17,11 +17,11 @@ using namespace std;
 	Permet d'obtenir la longueur du bloc.
 	Elle est choisi de manière aléatoire
 */
-void bloc::set_temps(){
+void bloc::set_temps(int longueur){
 	random_device rd;
 	mt19937 gen(rd());
-	uniform_int_distribution<> distr(1,10);
-	temps=distr(gen);
+	uniform_int_distribution<> distr(1,longueur);
+	temps=longueur;
 }
 
 //#######################################################################################//
@@ -166,6 +166,68 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 		anchors_tempo="";
 	}
 	//cout << endl;
+	i = 0;
+	while(i < anchors.size()) {
+    	//cout << anchors[i] << "/" << i << endl;
+		if (uniform_int_distribution<>{0,1}(gen)==1){
+			sequence += anchors[i] + " ";
+			i++;
+		} else {
+			sequence += "- ";
+		}
+	}
+	this -> set_seq(sequence);
+}
+
+
+//#######################################################################################//
+/*
+	Gère le cas du "%"
+*/
+
+void bloc::crochets_percent(int first_anchor_value, string anchor_list){
+	string sequence = "";
+	vector<string> anchors;
+	string anchors_tempo = "";
+	int anchors_doppelganger = 1;
+
+	//Random generator initialization.
+	random_device rd;
+	mt19937 gen(rd());
+
+	int i = 0;
+	int cpt_event=-1;
+
+	while (i<anchor_list.length())
+	{
+
+		if (anchor_list[i]=='%'){
+		i++;
+		anchors_doppelganger = anchor_list[i] - '0'; // - '0' convert char to int
+		//cout << anchors_doppelganger << "-" << anchors[cpt_event];
+		for (int j=1;j<anchors_doppelganger;j++){
+			anchors.push_back(anchors[cpt_event]);
+		}
+		i++;
+		continue;		
+		}
+
+		if (anchor_list[i]=='|'){
+			i++;
+			continue;
+		}
+
+		while(i<anchor_list.length() && (anchor_list[i]!='%' && anchor_list[i]!='|')){
+			anchors_tempo += anchor_list[i];
+			i++;
+		}
+
+		anchors.push_back(anchors_tempo);
+		anchors_tempo="";
+		cpt_event++;
+	
+	}
+
 	i = 0;
 	while(i < anchors.size()) {
     	//cout << anchors[i] << "/" << i << endl;

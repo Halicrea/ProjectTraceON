@@ -22,14 +22,20 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 	int first_anchor_value;
     bloc a;
 
-	int trace_nb = 20;
+	int trace_nb = stoi(argv[2]);
 	string trace_output[trace_nb] = {""};
-	int trace_length = 20;
-
+	int trace_length = stoi(argv[3]);
+	int nb_block = 0;
+	for(int i=0;i<parameter.length();i++){
+		if(parameter[i] == '(') nb_block++;
+	}
+	int block_length = (trace_length-(nb_block+1))/nb_block;
+	cout << "--Taille bloc" << block_length << endl;
 	// Create and open a text file
  	ofstream Trace_file(argv[2]);
 
-	cout << "Utilisations des paramètres: " << parameter << endl;
+	cout << "Utilisations des paramètres: " << parameter << " de taille: " << trace_nb << " et de longueur: " << trace_length << endl;
+
 
 	// We verify if the first anchor exist (\033[1;31m is used to print error in red)
 	if(!regex_search(parameter,trace,regex("(^E[0-9]*)"))){
@@ -56,7 +62,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 		//########################	The first case: ()	##########################
         if(parameter[0]=='('){
 			for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
-	            a.set_temps();
+	            a.set_temps(block_length);
     	        a.set_seq(a.parentheses());
 				trace_output[trace_cpt] += a.get_bloc();
 			}
@@ -72,7 +78,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 			if(parameter[3]=='+' || parameter[3]=='*'){
 				cout << "Cas +\n";
 				for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
-					a.set_temps();
+					a.set_temps(block_length);
 					a.crochets_plus_or_star(first_anchor_value,parameter[3]);
 					trace_output[trace_cpt] += a.get_bloc();
 				}
@@ -87,7 +93,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 						anchor_list.pop_back(); 	 // and remove the '>'
 						cout << "Cas |: " << anchor_list << endl;
 						for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
-							a.set_temps();
+							a.set_temps(block_length);
 							a.crochets_pipe(first_anchor_value,anchor_list);
 							trace_output[trace_cpt] += a.get_bloc();
 						}
@@ -99,7 +105,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 						anchor_list += cas_2.str(1);
 						cout << "Cas |: " << anchor_list << endl;
 						for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
-							a.set_temps();
+							a.set_temps(block_length);
 							a.crochets_pipe(first_anchor_value,anchor_list);
 							trace_output[trace_cpt] += a.get_bloc();
 						}
@@ -111,14 +117,14 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 						return 1;
 				}
 				
-			}
+			} 
 		}
 
         //cout << "Paramètre coupé: " << parameter << endl;
     }
 
 	//########################	At the end we add S and print to file	##########
-    for(int trace_cpt=0;trace_cpt<20;trace_cpt++){
+    for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
 		trace_output[trace_cpt] += "S";
 		Trace_file << "Trace_" << trace_cpt+1 << "| " << trace_output[trace_cpt] << endl;
 	}
