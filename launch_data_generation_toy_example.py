@@ -37,10 +37,15 @@ with open("init.txt","r") as file:
 	for line in file:
 		if line == difficulty:
 			expression=next(file)
+		if line == "Nombre_traces:\n":
+			nb_trace = next(file)[:-1]
+		if line == "Taille:\n":
+			size_trace = next(file)
 file.close()
 
+print(nb_trace,size_trace)
 ## Using subprocess to launch the executable C++ creating the traces
 if len(sys.argv) == 2:
-	subprocess.run(["./bin/main_TraceON",expression,"Test.txt"])
+	subprocess.run(["./bin/main_TraceON",expression,"Test.txt",nb_trace,size_trace])
 else:
-	subprocess.run(["./bin/main_TraceON",expression,sys.argv[2]])
+	subprocess.run(["./bin/main_TraceON",expression,sys.argv[2],nb_trace,size_trace])

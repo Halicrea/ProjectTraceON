@@ -58,11 +58,11 @@ int main(){
 
 	align_pairwize.init_matrix_align(n ,m);
 	cout << "==================================================\n";
-	cout << "Voulez vous afficher la matrice ?(non:0 oui:1) ";
+	/*cout << "Voulez vous afficher la matrice ?(non:0 oui:1) ";
 	if(input() == 1){
 		align_pairwize.print_matrice(n ,m);
 		align_pairwize.print_M_match(n ,m);
-	}
+	}*/
 	vector<int> Alignment1;
 	vector<int> Alignment2;
 	align_pairwize.alignment_global_pairwize(Alignment1,Alignment2);
@@ -75,5 +75,12 @@ int main(){
 	Seq_align2.sequence = Alignment2;
 	// On affiche l'alignement
 	align_pairwize.print_Alignment(Seq_align1,Seq_align2);
+
+	cout << "==================================================\n";
+	cout << "                 MULTI ALIGN\n";
+	string file_name = "Test.txt";
+	Multi_Align alignement_multiple;
+	alignement_multiple.init_trace_list(file_name);
+	alignement_multiple.multiple_alignment(3);
 	return 0;
 }

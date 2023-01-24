@@ -22,17 +22,17 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 	int first_anchor_value;
     bloc a;
 
-	int trace_nb = stoi(argv[2]);
+	cout << "Arguments: " << argv[3] << "/" << argv[4] << endl;
+	int trace_nb = stoi(argv[3]);
 	string trace_output[trace_nb] = {""};
-	int trace_length = stoi(argv[3]);
+	int trace_length = stoi(argv[4]);
 	int nb_block = 0;
 	for(int i=0;i<parameter.length();i++){
 		if(parameter[i] == '(') nb_block++;
 	}
 	int block_length = (trace_length-(nb_block+1))/nb_block;
 	cout << "--Taille bloc" << block_length << endl;
-	// Create and open a text file
- 	ofstream Trace_file(argv[2]);
+
 
 	cout << "Utilisations des paramètres: " << parameter << " de taille: " << trace_nb << " et de longueur: " << trace_length << endl;
 
@@ -124,6 +124,9 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
     }
 
 	//########################	At the end we add S and print to file	##########
+	// Create and open a text file
+ 	ofstream Trace_file(argv[2]);
+	
     for(int trace_cpt=0;trace_cpt<trace_nb;trace_cpt++){
 		trace_output[trace_cpt] += "S";
 		Trace_file << "Trace_" << trace_cpt+1 << "| " << trace_output[trace_cpt] << endl;
