@@ -107,4 +107,11 @@ string word_to_string(int word);
 /*void Class_align::print_Alignment(Type_trace trace1, Type_trace trace2);*/
 float difference(vector<matri> &D,vector<matri> &D_prec);
 vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list);
-void construire_arbre(vector<matri> &D);
+TArbreBin<string>* build_tree(vector<matri> &D_aux, vector<TArbreBin<string>*> &subtrees,
+							vector<string> &seq_prec_vector,
+							float value, int k, int r);
+void CAH(vector<matri> &D, TArbreBin<string>* &root);
+
+void find_pair_in_tree(TArbreBin<string> *node, TArbreBin<string>* &pair, double &value_max);
+vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string> *root,
+													vector<Type_trace> trace_list);

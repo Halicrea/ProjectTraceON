@@ -5,6 +5,8 @@
 ###########################################*/
 #include "simple_functions.hpp"
 #include <iostream>
+#include <sstream>
+#include <string>
 using namespace std;
 //#######################################################################################//
 /*
@@ -93,3 +95,9 @@ int input()
 	}
 	return stoi(entree);
 }
+
+template <typename T> string to_str(const T& t) { 
+   ostringstream os; 
+   os<<t; 
+   return os.str(); 
+} 

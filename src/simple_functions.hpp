@@ -3,8 +3,7 @@
 ## Par Elyna Bouchereau & Florent Boyer
 ## Fichier: simple_functions.hpp
 ###########################################*/
-using namespace std;
-
+#include <string>
 /*
 	Function which return true if it find a specific value
 	in an array.
@@ -20,3 +19,4 @@ int partition(int*, int, int);
 
 /**/
 int input();
+template <typename T> std::string to_str(const T& t);

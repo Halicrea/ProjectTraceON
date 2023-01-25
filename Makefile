@@ -5,7 +5,6 @@
 PROGR_NAME	= main_traceAlign
 CREATE_SEQ	= main_TraceON
 SUBMIT_NAME	= project_TraceON_ElynaB-FlorentB.zip
-
 #######################################################
 #           Folders 					       	      #
 #######################################################
@@ -47,6 +46,4 @@ clean:
 
 submit:
 	rm $(SUBMIT_NAME)
-	zip $(SUBMIT_NAME) *
-
-
+	zip -r $(SUBMIT_NAME) *
