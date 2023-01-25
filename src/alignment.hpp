@@ -114,4 +114,5 @@ void CAH(vector<matri> &D, TArbreBin<string>* &root);
 
 void find_pair_in_tree(TArbreBin<string> *node, TArbreBin<string>* &pair, double &value_max);
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string> *root,
-													vector<Type_trace> trace_list);
+													vector<Type_trace> trace_list,
+													float &score);

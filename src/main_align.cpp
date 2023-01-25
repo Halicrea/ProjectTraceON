@@ -81,6 +81,6 @@ int main(){
 	string file_name = "Test.txt";
 	Multi_Align alignement_multiple;
 	alignement_multiple.init_trace_list(file_name);
-	alignement_multiple.multiple_alignment(3);
+	alignement_multiple.multiple_alignment(10);
 	return 0;
 }
