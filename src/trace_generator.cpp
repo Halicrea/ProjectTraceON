@@ -13,10 +13,8 @@ using namespace std;
 //###########################################
 
 //#######################################################################################//
-/*
-	Permet d'obtenir la longueur du bloc.
-	Elle est choisi de manière aléatoire
-*/
+//Get the length of the blocks randomly
+
 void bloc::set_temps(int longueur){
 	random_device rd;
 	mt19937 gen(rd());
@@ -25,11 +23,7 @@ void bloc::set_temps(int longueur){
 }
 
 //#######################################################################################//
-/*
-	Permet d'obtenir la longueur du bloc.
-	Elle est choisi de manière aléatoire
-*/
-//Dans la suite on veut une fonction qui affiche le temps
+// Function that display the time
 string bloc::print_temps(){
 	string seq_tps = "";
 	for (int i=0;i<temps;i++){
@@ -39,41 +33,32 @@ string bloc::print_temps(){
 }
 
 //######################################################################################//
-/*
-	Permet d'obtenir la longueur du bloc.
-	Elle est choisi de manière aléatoire
-*/
-// Constructeur de sequence
+// Building the sequences
 void bloc::set_seq(string sequence){
 	seq=sequence;
 }
 
 //#######################################################################################//
-/*
-	Permet d'obtenir la longueur du bloc.
-	Elle est choisi de manière aléatoire
-*/
+// We use the function print_temps() to get a time-sized sequence and without anchors.
 string bloc::parentheses(){
-	// On utilise la fonction print_temps() pour obtenir une séquence de taille temps et sans anchors.
 	return this -> print_temps();
 }
 
 //######################################################################################//
-/*
-	Permet d'obtenir la longueur du bloc.
-	Elle est choisi de manière aléatoire
-*/
+// Procedure make the dataset with + or *
 void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
-	// On ajoute à des positions aléatoire des anchors
+	// We add at random positions the anchors
 	string sequence = "";
 	int nbr_anchors = 0;
 	int val_tempo = 0;
 	int val_anchor;
 	int j=0;
-	bool placing_anchor; 
+	bool placing_anchor;
 
+	//Random generator initialization.
 	random_device rd;
 	mt19937 gen(rd());
+
 	if (temps == 0){
 		this -> set_seq(sequence);
 		return;
@@ -94,18 +79,8 @@ void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
 		}
 		anchor_pos[i]=val_tempo;
 	}
-	//cout << "Temps: " << temps<< endl;
-	//cout << "Liste non triée: ";
-	/*for (int i=0; i<nbr_anchors;i++){
-		cout << anchor_pos[i]<< "/";
-	}
-	cout << endl;*/
+	// Sort the sequence with anchors 
 	quickSort(anchor_pos,0,nbr_anchors-1);
-	/*cout << "Liste triée: ";
-	for (int i=0; i<nbr_anchors;i++){
-		cout << anchor_pos[i]<< "/";
-	}
-	cout << endl;*/
 	
 	for (int i=0; i<temps;i++){
 		if (anchor_pos[j]==i){
@@ -121,12 +96,9 @@ void bloc::crochets_plus_or_star(int first_anchor_value, char etoile_croix){
 }
 
 //#######################################################################################//
-/*
-	Permet d'obtenir la longueur du bloc.
-	Elle est choisi de manière aléatoire
-*/
+// Procedure make the dataset with |
 void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
-	// On ajoute à des positions aléatoire des anchors
+	// We add at random positions the anchors
 	string sequence = "";
 	vector<string> anchors;
 	string anchors_tempo = "";
@@ -141,12 +113,9 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 	// for each time we add an event. We initialize it at -1 
 	int cpt_event=-1;
 	while (i<anchor_list.length()){
-		//cout << anchor_list[i] << "/";
 		if (anchor_list[i]=='X'){
-			//cout << "There is an X";
 			i++;
 			anchors_doppelganger = anchor_list[i] - '0'; // - '0' convert char to int
-			//cout << anchors_doppelganger << "-" << anchors[cpt_event];
 			for (int j=1;j<anchors_doppelganger;j++){
 				anchors.push_back(anchors[cpt_event]);
 			}
@@ -165,10 +134,9 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 		cpt_event++;
 		anchors_tempo="";
 	}
-	//cout << endl;
+
 	i = 0;
 	while(i < anchors.size()) {
-    	//cout << anchors[i] << "/" << i << endl;
 		if (uniform_int_distribution<>{0,1}(gen)==1){
 			sequence += anchors[i] + " ";
 			i++;
@@ -181,11 +149,9 @@ void bloc::crochets_pipe(int first_anchor_value, string anchor_list){
 
 
 //#######################################################################################//
-/*
-	Gère le cas du "%"
-*/
-
+// Procedure make the dataset with %
 void bloc::crochets_percent(int first_anchor_value, string anchor_list){
+	// We add at random positions the anchors
 	string sequence = "";
 	vector<string> anchors;
 	string anchors_tempo = "";
@@ -242,10 +208,6 @@ void bloc::crochets_percent(int first_anchor_value, string anchor_list){
 }
 
 //#######################################################################################//
-/*
-	Permet d'obtenir la longueur du bloc.
-	Elle est choisi de manière aléatoire
-*/
 // Get sequence finale
 string bloc::get_bloc(){
 	string sequence=seq;

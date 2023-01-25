@@ -4,6 +4,7 @@
 ## Fichier: simple_functions.hpp
 ###########################################*/
 #include <string>
+
 /*
 	Function which return true if it find a specific value
 	in an array.
@@ -17,6 +18,8 @@ bool find(int*, int, int);
 void quickSort(int*, int, int);
 int partition(int*, int, int);
 
-/**/
+/*
+	Give a default value if the value as not correct
+*/
 int input();
 template <typename T> std::string to_str(const T& t);

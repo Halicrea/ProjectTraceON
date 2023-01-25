@@ -20,3 +20,11 @@ Exemple de syntaxe de génération de trace:
 > E1, E2, I1 et I2 doivent apparaître qu'une fois
 
 Il faut faire un MakeFile
+
+# Génération de données
+Pour générer un jeu de données aléatoire vous devez lancer dans un terminal le fichier python suivant:
+launch_data_generation_toy_example.python
+
+Le tout doit être suivi par le chiffre 1 ou 2 en fonction de la difficulté des données que vous souhaité obtenir. 
+Avec 1 pour facile et 2 pour difficile.
+

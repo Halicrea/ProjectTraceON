@@ -126,6 +126,12 @@ int subst(int event, int event2){
 		}
 		return -1;
 	}
+	if(event == -1 || event2 == -1){
+		if(event == event2){
+			return 1;
+		}
+		return -1;
+	}
 	result_subst = abs(event - event2);
 	if (result_subst == 0){
 		return (2);
@@ -253,15 +259,12 @@ $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |  $$ |        $$$$$$$  |\$$$$$$$ |$$ |$$ |
                    \______/                   \__|                              
 */
 void Class_align::alignment_global_pairwize(vector<int> &Alignment1,vector<int> &Alignment2){
-	//vector<int> Alignment1;
-	//vector<int> Alignment2;
+	//******** INIT VARIABLES ****************
 	int i = trace_align1.sequence.size();
 	int j = trace_align2.sequence.size();
 	cout << i << "-"<< j << endl;
-	for(int cpt=0;cpt<trace_align1.sequence.size();cpt++) cout << trace_align1.sequence[cpt] << ' ';
-	cout << endl;
-	for(int cpt=0;cpt<trace_align2.sequence.size();cpt++) cout << trace_align2.sequence[cpt] << ' ';
-	cout << endl;
+
+	//******** CREATE THE ALIGNED SEQUENCE ***
 	while(i > 0 || j > 0){
 		if(i>0 && j>0 && (M_match[i][j] == '\\')){
 			Alignment1.push_back(trace_align1.sequence[i-1]);
@@ -278,12 +281,10 @@ void Class_align::alignment_global_pairwize(vector<int> &Alignment1,vector<int> 
 				j--;
 		}
 	}
-	for(int cpt=0;cpt<Alignment1.size();cpt++) cout << Alignment1[cpt] << ' ';
-	cout << endl;
-	for(int cpt=0;cpt<Alignment2.size();cpt++) cout << Alignment2[cpt] << ' ';
-	cout << endl;
-	//cout << "k " << Alignment1 << endl;
-	//cout << "  " << Alignment2 << endl;
+
+	// Since the two vector were build from the end, we need to reverse them.
+	reverse(Alignment1.begin(), Alignment1.end());
+	reverse(Alignment2.begin(), Alignment2.end());
 }
 
 //##################################################################################
@@ -739,61 +740,76 @@ $$ |      $$ |      \$$$$$$  |$$ |\$$$$$$$\ \$$$$$$$\   \$$$$  |$$ |\$$$$$$  |$$
                         \$$$$$$  |                                                                
                          \______/                                                                 
 */
-void Multi_Align::print_align(){
+void Multi_Align::print_align(vector<Type_trace> list_aligned){
 	int word, word_max;
 	string sequence;
 	int word_length_max = 1;
-	for(int n=0;n<trace_align.size();n++){
-		sequence = trace_align[n].header + "\t";
-		for(int i=0; i<trace_align[n].sequence.size();i++){
-			for(int j=0;j<trace_align.size();j++){
+	cout << "Taille: " << list_aligned.size() << endl;
+	for(int n=0;n<list_aligned.size();n++){
+		sequence = list_aligned[n].header + "\t";
+		for(int i=0; i<list_aligned[n].sequence.size();i++){
+			for(int j=0;j<list_aligned.size();j++){
 				//words.push_back(trace_align[j].sequence[i]);
-				word_max = trace_align[j].sequence[i];
+				word_max = list_aligned[j].sequence[i];
 				if(word_length(word_max) > word_length_max){
 					word_length_max = word_length(word_max);
 				}
 			}
 			//cout << word_length_max << '/';
-			word = trace_align[n].sequence[i];
+			word = list_aligned[n].sequence[i];
 			sequence += word_to_string(word) + ' ';
 			//sequence += ' '*(word_length_max-word_length(word));
 		}
 		//cout << endl;
 		cout << sequence + 'S' << endl;
+		//for(int i=0;i<list_aligned[n].sequence.size();i++) cout << list_aligned[n].sequence[i] << ' ';
+		//cout << endl;
 	}
 }
-void find_pair_in_tree(TArbreBin<string> *node, TArbreBin<string>* &pair, float &value_max){
+
+bool node_before_leaf(TArbreBin<string> *node){
+	if(node -> fg -> fg == NULL &&
+		node -> fg -> fd == NULL &&
+		node -> fd -> fg == NULL &&
+		node -> fd -> fd == NULL){
+			return true;
+		} else return false;
+}
+
+void find_pair_in_tree(TArbreBin<string> *node, tree_ptr* &pair, float &value_max){
 	float value;
 	if(node != NULL){
 		value = atof((node->data).c_str());
 		//cout << value << "/";
-		if (value > value_max){value_max = value; pair=node;}
+		if (value > value_max && node_before_leaf(node) ){value_max = value; pair -> node = node;}
 		find_pair_in_tree(node -> fg, pair, value_max);
 		find_pair_in_tree(node -> fd, pair, value_max);
 	}
 }
-vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string> *root,
+vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													vector<Type_trace> trace_list,
-													float &score){
+													float &score,
+													string &name_trace_to_remove){
 	vector<Type_trace> trace_to_align;
-	TArbreBin<string> *pair;
+	tree_ptr *pair;
 	float value_max = 0.0;
 	int i = 0;
 	bool trouver, trouver1, trouver2;
 	trouver = trouver1 = trouver2 = false;
 	Type_trace trace_1, trace_2, trace_align_1, trace_align_2;
 	int index_trace_1, index_trace_2;
+	string pair_name;
 
-	cout << "========================\n";
-	cout << "Find pair: ";
+	//cout << "========================\n";
+	//cout << "Find pair: ";
 	find_pair_in_tree(root, pair, value_max);
 	cout << endl;
-	pair -> printBTS();
+	//pair -> node -> printBTS();
 
 	//******* PAIR FOUND: PROJECTION *******
 	while(i<trace_list.size() && !trouver){
-		if(pair -> fg -> data == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
-		if(pair -> fd -> data == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
+		if(pair -> node -> fg -> data == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
+		if(pair -> node -> fd -> data == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
 		if(trouver1 && trouver2){trouver = true;}
 		i++;
 	}
@@ -809,7 +825,6 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string> *root,
 	}
 	Class_align pair_align(trace_1, trace_2, M, M_match);
 	pair_align.init_matrix_align(n,m);
-	pair_align.print_Alignment(trace_1,trace_2);	
 	pair_align.alignment_global_pairwize(trace_align_1.sequence, trace_align_2.sequence);
 	score += M[n][m];
 	// We can then deallocate memory
@@ -821,11 +836,18 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string> *root,
 	delete[] M_match;
 
 	for(int i=0;i<trace_list.size();i++){
-		if(trace_list[i].header == trace_1.header) {index_trace_1 = i, trace_list[i].sequence = trace_align_1.sequence;}
+		if(trace_list[i].header == trace_1.header) {index_trace_1 = i; trace_list[i].sequence = trace_align_1.sequence;}
 		if(trace_list[i].header == trace_2.header) {index_trace_2 = i; trace_list[i].sequence = trace_align_2.sequence;}
 	}
 	move(trace_list,index_trace_2,index_trace_1+1);
 
+	//****** RETURN AND DELETE NODE ******
+	pair_name = trace_1.header + trace_2.header;
+	pair -> node -> fg = NULL;
+	pair -> node -> fd = NULL;
+	pair -> node -> data = pair_name;
+	//pair->delete_tree(pair, pair_name);
+	name_trace_to_remove = trace_1.header;
 	return trace_list;
 }
 
@@ -842,15 +864,17 @@ $$ |  $$\ $$ |  $$ |$$ |      $$   ____|       $$ |\$  /$$ |$$\   $$ |$$ |  $$ |
                                                                                 
 */
 // TODO FINISH THIS GODDAMN MOTHERFUCKER
-// n le nombre de séquences
+// le nombre de séquences
 void Multi_Align::multiple_alignment(float seuil){
 	//*** INIT VAR	****
 	TArbreBin<string> *T,*T_prec;
 	trace_align = trace_list;
+	vector<Type_trace> list_aligned;
 	vector<matri> D(trace_list.size());
 	vector<matri> D_prec(trace_list.size());
 	bool convergence;
 	float score = 0;
+	string name_trace_to_remove;
 	// List of sequences is define in the class
 	// type_alignment is a vector of traces define in the class: trace_align
 
@@ -861,7 +885,7 @@ void Multi_Align::multiple_alignment(float seuil){
 
 	int i = 1;
 	cout << "# Début boucle\n";
-	while(!convergence){
+	while(i < number_of_traces-1){
 		if(i==1){
 			cout << "# Dissimilarity\n";
 			D = calcul_dissimilarite(trace_list);
@@ -870,16 +894,28 @@ void Multi_Align::multiple_alignment(float seuil){
 		//if(difference(D,D_prec) <= seuil){convergence = true; break;}
 		// convergence = false
 		CAH(D, T);
-		//T ->printBTS();
-		trace_align = aligner_sequences_ou_projection(T, trace_align, score);
-		trace_list = trace_align;
-		trace_align.erase(trace_align.begin());
+		if(i<2){
+			T_prec = T;
+			//cout << "================= Affichage alignment multiple ===\n";
+			//T_prec -> printBTS();
+		}
+		T ->printBTS();
+		trace_align = aligner_sequences_ou_projection(T, trace_align, score, name_trace_to_remove);
+		//trace_list = trace_align;
+
+		int cpt = 0;
+		while(trace_align[cpt].header != name_trace_to_remove){
+			cpt++;
+		}
+		list_aligned.push_back(trace_align[cpt]);
+		trace_align.erase(trace_align.begin() + cpt);
 		D_prec = D;
 		i++;
-		convergence = true;
 	}
+	//T_prec -> printBTS();
 	cout << "================= Affichage alignment multiple ===\n";
-	print_align();
+	print_align(list_aligned);
+	print_align(trace_align);
 	cout << "== Score: " << score << endl;
 }
 

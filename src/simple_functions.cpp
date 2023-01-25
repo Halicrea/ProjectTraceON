@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 using namespace std;
+
 //#######################################################################################//
 /*
 	Finding if a value exist in an array.
@@ -23,21 +24,20 @@ bool find(int *table, int val, int nbr_anchors){
 	if ((val == table[i])){
 		trouver = true;
 	}
-	//cout << "Trouver : "<< trouver << endl;
 	return trouver;
 }
 
 //#######################################################################################//
 /*
-	Quick sort
+	Quick sort Procedure
 */
 void quickSort(int table[], int left, int right){
 	if(left<right){
 		int index_pivot;
-		//Partition du tableau
+		// array partition
 		index_pivot = partition(table,left,right);
 
-		//
+		//sort recursive
 		quickSort(table,left,right-1);
 		quickSort(table,left+1,right);
 	}

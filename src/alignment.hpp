@@ -53,14 +53,13 @@ class Multi_Align{
 		void init_trace_list(string file_name);
 		//vector<int>** calcul_dissimilarite(vector<Type_trace> trace_list);
 		void multiple_alignment(float seuil);
-		void print_align();
+		void print_align(vector<Type_trace> list_aligned);
 
 };
 
 //***********************  CLASS BINARY TREE ******************************
 template <typename T>
 class TArbreBin{
-	
 	public:
 		TArbreBin* fg;
 		TArbreBin* fd;
@@ -69,6 +68,21 @@ class TArbreBin{
 			data = val;
 			fg = NULL;
 			fd = NULL;
+		}
+		void delete_tree(TArbreBin* &root, string &pair_name){
+			if (this != NULL) {
+				// Delete recursively left children.
+				this -> delete_tree(root, pair_name);
+				// Delete recursively right children.
+				this -> delete_tree(root, pair_name);
+				
+				// Deletion of the node
+				if(this != root) {
+            		this = NULL;
+         		}  else {
+					root -> data = pair_name;
+				}
+			}
 		}
 		void afficher_arbre(){
 			if(this != NULL){
@@ -81,6 +95,9 @@ class TArbreBin{
 		void printBTS();
 };
 
+struct tree_ptr{
+	TArbreBin<string>* node;
+};
 
 //***********************  FUNCTIONS DECLARATION **************************
 
@@ -113,6 +130,7 @@ TArbreBin<string>* build_tree(vector<matri> &D_aux, vector<TArbreBin<string>*> &
 void CAH(vector<matri> &D, TArbreBin<string>* &root);
 
 void find_pair_in_tree(TArbreBin<string> *node, TArbreBin<string>* &pair, double &value_max);
-vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string> *root,
+vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													vector<Type_trace> trace_list,
-													float &score);
+													float &score,
+													string &name_trace_to_remove);

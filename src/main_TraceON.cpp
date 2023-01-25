@@ -10,6 +10,7 @@
 #include <fstream>
 #include <regex>
 using namespace std;
+
 //#######################################################################################//
 int main(int argc, char *argv[]){ // Use argv to pass the expression as parameter
 	string parameter;
@@ -23,6 +24,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
     bloc a;
 
 	cout << "Arguments: " << argv[3] << "/" << argv[4] << endl;
+	//Initialize
 	int trace_nb = stoi(argv[3]);
 	string trace_output[trace_nb] = {""};
 	int trace_length = stoi(argv[4]);
@@ -30,10 +32,11 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 	for(int i=0;i<parameter.length();i++){
 		if(parameter[i] == '(') nb_block++;
 	}
+	//We check the number of blocks
 	int block_length = (trace_length-(nb_block+1))/nb_block;
 	cout << "--Taille bloc" << block_length << endl;
 
-
+	// We check the number of sequences and this length
 	cout << "Utilisations des paramètres: " << parameter << " de taille: " << trace_nb << " et de longueur: " << trace_length << endl;
 
 
@@ -68,7 +71,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 			}
 			parameter.erase(0,2);
 
-		//########################	Else we are on case: <()>	##################
+		//########################	Else we are on case: <()>	###################
         } else {
 			if(parameter[3]=='>'){
 				cout << "\033[1;31mError in case expression\n";
@@ -82,7 +85,6 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 					a.crochets_plus_or_star(first_anchor_value,parameter[3]);
 					trace_output[trace_cpt] += a.get_bloc();
 				}
-				//cout << "Add and erase\n";
 				parameter.erase(0,5);
 			} else {
 				regex_search(parameter,cas_1,regex("(E[0-9X]*[>\\|])"));
@@ -116,11 +118,8 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 						cout << "\033[1;31mError in case expression\033[0m\n";
 						return 1;
 				}
-				
 			} 
 		}
-
-        //cout << "Paramètre coupé: " << parameter << endl;
     }
 
 	//########################	At the end we add S and print to file	##########

@@ -43,6 +43,7 @@ int main(){
 	print_Type_trace(seq1_sub);
 	print_Type_trace(seq2_sub);
 
+	//Make the matrix of dissimilarity
 	int n = seq1_sub.sequence.size();
 	int m = seq2_sub.sequence.size();
 	int** M = new int* [n+1];
@@ -54,6 +55,7 @@ int main(){
 		M_match[i] = new char [m+1];
 	}
 
+	//Make the alignement pairwize
 	Class_align align_pairwize(seq1_sub,seq2_sub, M, M_match);
 
 	align_pairwize.init_matrix_align(n ,m);
@@ -63,6 +65,8 @@ int main(){
 		align_pairwize.print_matrice(n ,m);
 		align_pairwize.print_M_match(n ,m);
 	}*/
+
+	//Give a score of dissimilarity
 	vector<int> Alignment1;
 	vector<int> Alignment2;
 	align_pairwize.alignment_global_pairwize(Alignment1,Alignment2);
@@ -73,7 +77,8 @@ int main(){
 	Type_trace Seq_align2;
 	Seq_align2.header = seq2_sub.header;
 	Seq_align2.sequence = Alignment2;
-	// On affiche l'alignement
+
+	// Shaw the alignment
 	align_pairwize.print_Alignment(Seq_align1,Seq_align2);
 
 	cout << "==================================================\n";
