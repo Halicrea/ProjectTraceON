@@ -1,5 +1,9 @@
-## Project TraceON: Alignment of traces
-Le concept est de produire un algorithme d'alignement de traces. Les traces étant des éléments abstraits.  
+## Project TraceON: Alignement multiple de traces d'évènements
+
+Ce projet est une tentatives de création d'un programme en C++ qui va créer des séquences aléatoires selon une difficulté demandée, 
+aligner ses séquences et obtenir le score des alignements obtenus.
+
+Le concept est de produire un algorithme d'alignement de traces. Les traces étant des éléments abstraits.
 
 Les points apparaissant sont les temps, toute les 30" par exemple on aligne.  
 
