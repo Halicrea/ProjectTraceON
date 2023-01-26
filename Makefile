@@ -4,7 +4,7 @@
 #######################################################
 PROGR_NAME	= main_traceAlign
 CREATE_SEQ	= main_TraceON
-SUBMIT_NAME	= project_TraceON_ElynaB-FlorentB.zip
+SUBMIT_NAME	= project_TraceON_ElynaB-FlorentB.tar.gz
 #######################################################
 #           Folders 					       	      #
 #######################################################
@@ -18,7 +18,7 @@ OBJ_LIST	= $(BIN_DIR)/$(notdir $(SRC_LIST:.cpp=.o))
 BIN			= bin/$(CREATE_SEQ)
 BIN2		= bin/$(PROGR_NAME)
 OBJS_GEN	= obj/trace_generator.o obj/simple_functions.o
-OBJS_ALIGN	= obj/alignment.o obj/simple_functions.o
+OBJS_ALIGN	= obj/alignment.o obj/simple_functions.o obj/clustering.o obj/pairwize_global.o
 
 #######################################################
 #           Compilation for the different files  	  #
@@ -46,4 +46,4 @@ clean:
 
 submit:
 	rm $(SUBMIT_NAME)
-	zip -r $(SUBMIT_NAME) *
+	tar -czvf $(SUBMIT_NAME) *

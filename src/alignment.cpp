@@ -3,6 +3,9 @@
 ## Par Elyna Bouchereau & Florent Boyer
 ## Fichier: alignment.cpp
 ###########################################*/
+#include "struct.hpp"
+#include "pairwize_global.hpp"
+#include "clustering.hpp"
 #include "alignment.hpp"
 #include <string>
 #include <iostream>
@@ -12,14 +15,7 @@
 #include <cmath>
 #include <algorithm>
 #include <random>
-#include <iomanip>
 using namespace std;
-
-template <typename T> string to_str(const T& t) { 
-   ostringstream os; 
-   os<< t << setprecision(2) ; 
-   return os.str(); 
-} 
 
 // https://stackoverflow.com/questions/45447361/how-to-move-certain-elements-of-stdvector-to-a-new-index-within-the-vector
 template <typename t> void move(vector<t>& v, size_t oldIndex, size_t newIndex)
@@ -30,55 +26,44 @@ template <typename t> void move(vector<t>& v, size_t oldIndex, size_t newIndex)
 		rotate(v.begin() + oldIndex, v.begin() + oldIndex + 1, v.begin() + newIndex + 1);
 	}
 }
-//##########################################################################
-/*
-$$$$$$$$\                                  $$\                                            
-\__$$  __|                                 $$ |                                           
-   $$ |$$\   $$\  $$$$$$\   $$$$$$\      $$$$$$\    $$$$$$\  $$$$$$\   $$$$$$$\  $$$$$$\  
-   $$ |$$ |  $$ |$$  __$$\ $$  __$$\     \_$$  _|  $$  __$$\ \____$$\ $$  _____|$$  __$$\ 
-   $$ |$$ |  $$ |$$ /  $$ |$$$$$$$$ |      $$ |    $$ |  \__|$$$$$$$ |$$ /      $$$$$$$$ |
-   $$ |$$ |  $$ |$$ |  $$ |$$   ____|      $$ |$$\ $$ |     $$  __$$ |$$ |      $$   ____|
-   $$ |\$$$$$$$ |$$$$$$$  |\$$$$$$$\       \$$$$  |$$ |     \$$$$$$$ |\$$$$$$$\ \$$$$$$$\ 
-   \__| \____$$ |$$  ____/  \_______|$$$$$$\\____/ \__|      \_______| \_______| \_______|
-       $$\   $$ |$$ |                \______|                                             
-       \$$$$$$  |$$ |                                                                     
-        \______/ \__|                                                                     
-	This function is used to transform a trace, which is a string, into
-	a struct composed of a header, the trace ID, and a sequence, which
-	is a vector of event.
-*/
-Type_trace trace_to_dict(string seq){
-	Type_trace trace;
-	string event;
+template <typename T>
+int finder(vector<Type_trace> list, T val){
 	int i=0;
-	while(seq[i] != ' '){
-		trace.header += seq[i];
-		i++;
+	while(i<list.size() && list[i].header != val){
+		 if(list[i].header == val) return i;
 	}
-	while(i < seq.length()-1){
-		string event = "";
-		if(seq[i] == ' '){
-		} else {
-			if(seq[i] == '-'){
-				trace.sequence.push_back(0);
-			} else {
-				if(seq[i] == 'E'){
-				} else {
-					while(seq[i] != ' '){
-						event += seq[i];
-						i++;
-					}
-					int event_num = stoi(event);
-					trace.sequence.push_back(event_num);
-				}
-			}
-		}
-		i++;
+	return list.size()-1;
+}
+struct tree_ptr{
+	TArbreBin<string>* node;
+};
+//****************************************************************
+/*
+	Affiche un bel arbre.
+	└──A
+		├──B
+		│   ├──R
+		│   └──S
+		└──C
+			└──D
+
+*/
+template<typename T>
+void TArbreBin<T>::printBTS(){
+	this -> printBTS("",false);
+}
+template<typename T>
+void TArbreBin<T>::printBTS(const string& prefix, bool isLeft){
+	if(this != NULL){
+		cout << prefix;
+		cout << (isLeft ? "├──" : "└──");
+		cout << data << endl;
+		fg -> printBTS(prefix + (isLeft ? "│   " : "    "), true);
+		fd -> printBTS(prefix + (isLeft ? "│   " : "    "), false);
 	}
-	return(trace);
 }
 
-//##########################################################################
+//****************************************************************
 /*
 	Simple procedure for printing a Type_trace.
 */
@@ -95,250 +80,8 @@ void print_Type_trace(Type_trace trace){
 }
 
 
-//##################################################################################
-int gap_weigth(int gap_initial, int gap_penalty, int& gap_length){
-	int gap_value = - gap_initial + (gap_penalty * gap_length);
-	return gap_value;
-}
-//##################################################################################
-/*
-$$\      $$\            $$\               $$\              $$$$$$$$\                  
-$$$\    $$$ |           $$ |              $$ |             $$  _____|                 
-$$$$\  $$$$ | $$$$$$\ $$$$$$\    $$$$$$$\ $$$$$$$\         $$ |   $$\   $$\ $$$$$$$\  
-$$\$$\$$ $$ | \____$$\\_$$  _|  $$  _____|$$  __$$\        $$$$$\ $$ |  $$ |$$  __$$\ 
-$$ \$$$  $$ | $$$$$$$ | $$ |    $$ /      $$ |  $$ |       $$  __|$$ |  $$ |$$ |  $$ |
-$$ |\$  /$$ |$$  __$$ | $$ |$$\ $$ |      $$ |  $$ |       $$ |   $$ |  $$ |$$ |  $$ |
-$$ | \_/ $$ |\$$$$$$$ | \$$$$  |\$$$$$$$\ $$ |  $$ |       $$ |   \$$$$$$  |$$ |  $$ |
-\__|     \__| \_______|  \____/  \_______|\__|  \__|$$$$$$\\__|    \______/ \__|  \__|
-                                                    \______|                          
-*/
-int del(int event, int gap_initial, int gap_penalty, int& gap_length){
-	return gap_weigth(gap_initial, gap_penalty, gap_initial);
-}
-int ins(int event, int gap_initial, int gap_penalty, int& gap_length){
-	return gap_weigth(gap_initial, gap_penalty, gap_initial);
-}
-int subst(int event, int event2){
-	int result_subst = 0;
-	if(event == 0 || event2 == 0){
-		if(event == event2){
-			return 1;
-		}
-		return -1;
-	}
-	if(event == -1 || event2 == -1){
-		if(event == event2){
-			return 1;
-		}
-		return -1;
-	}
-	result_subst = abs(event - event2);
-	if (result_subst == 0){
-		return (2);
-	} else return - result_subst;
-}
-void max(int insert, int delet, int substit, char *ptr, int& gap_length, int& result){
-	// Need to take in account the length of consecutiv gap
-	if(insert > delet && insert > substit){
-		result = insert;
-		*ptr = '-';
-		gap_length++;
-	} else {
-		if(delet >= insert && delet > substit){
-			result = delet;
-			*ptr = '|';
-			gap_length++;
-		} else {
-			result = substit;
-			*ptr= '\\';
-			gap_length = 0;
-		}
-	}
-}
-//##################################################################################
-/*
-$$$$$$\           $$\   $$\           $$\      $$\            $$\               $$\           
-\_$$  _|          \__|  $$ |          $$$\    $$$ |           $$ |              \__|          
-  $$ |  $$$$$$$\  $$\ $$$$$$\         $$$$\  $$$$ | $$$$$$\ $$$$$$\    $$$$$$\  $$\ $$\   $$\ 
-  $$ |  $$  __$$\ $$ |\_$$  _|        $$\$$\$$ $$ | \____$$\\_$$  _|  $$  __$$\ $$ |\$$\ $$  |
-  $$ |  $$ |  $$ |$$ |  $$ |          $$ \$$$  $$ | $$$$$$$ | $$ |    $$ |  \__|$$ | \$$$$  / 
-  $$ |  $$ |  $$ |$$ |  $$ |$$\       $$ |\$  /$$ |$$  __$$ | $$ |$$\ $$ |      $$ | $$  $$<  
-$$$$$$\ $$ |  $$ |$$ |  \$$$$  |      $$ | \_/ $$ |\$$$$$$$ | \$$$$  |$$ |      $$ |$$  /\$$\ 
-\______|\__|  \__|\__|   \____/$$$$$$\\__|     \__| \_______|  \____/ \__|      \__|\__/  \__|
-                               \______|                                                       
-	Initialise and complete scoring.
-*/
-void Class_align::init_matrix_align(int n, int m){
-	M[0][0] = 0;
-	M_match[0][0] = 'n';
-	char ptr;
-	int gap_length = 0;
-	int result = 0;
 
-	for(int i=1;i<=n;i++){
-		M[i][0] = - ( gap_initial + ( gap_penalty * (i - 1) ) );
-		M_match[i][0] = '-';
-	}
-	for(int j=1;j<=m;j++){
-		M[0][j] = - ( gap_initial + ( gap_penalty * (j - 1) ) );
-		M_match[0][j] = '|';
-		for(int i=1;i<=n;i++){
-			max(
-				M[i][j-1]+del(trace_align1.sequence[i-1],gap_initial,gap_penalty,gap_length),
-				M[i-1][j]+ins(trace_align2.sequence[j-1],gap_initial,gap_penalty,gap_length),
-				M[i-1][j-1]+subst(trace_align1.sequence[i-1],trace_align2.sequence[j-1]),&ptr,gap_length,result);
-			M[i][j]=result;
-			M_match[i][j] = ptr;
-		}
-	}
-}
-//##########################################################################
-/*
-$$$$$$$\            $$\            $$\                                    $$\               $$\           
-$$  __$$\           \__|           $$ |                                   $$ |              \__|          
-$$ |  $$ | $$$$$$\  $$\ $$$$$$$\ $$$$$$\         $$$$$$\$$$$\   $$$$$$\ $$$$$$\    $$$$$$\  $$\ $$\   $$\ 
-$$$$$$$  |$$  __$$\ $$ |$$  __$$\\_$$  _|        $$  _$$  _$$\  \____$$\\_$$  _|  $$  __$$\ $$ |\$$\ $$  |
-$$  ____/ $$ |  \__|$$ |$$ |  $$ | $$ |          $$ / $$ / $$ | $$$$$$$ | $$ |    $$ |  \__|$$ | \$$$$  / 
-$$ |      $$ |      $$ |$$ |  $$ | $$ |$$\       $$ | $$ | $$ |$$  __$$ | $$ |$$\ $$ |      $$ | $$  $$<  
-$$ |      $$ |      $$ |$$ |  $$ | \$$$$  |      $$ | $$ | $$ |\$$$$$$$ | \$$$$  |$$ |      $$ |$$  /\$$\ 
-\__|      \__|      \__|\__|  \__|  \____/$$$$$$\\__| \__| \__| \_______|  \____/ \__|      \__|\__/  \__|
-                                          \______|                                                        
-https://mvdsman.github.io/blog/Simple-pairwise-alignment/*/
-void  Class_align::print_matrice(int n, int m){
-    cout << "        ";
-    for( int i = 0; i < n; i++ ){
-        cout << trace_align1.sequence[i] << "   ";
-    }
-    cout << "\n  ";
-
-    for( int j = 0; j <= m; j++ ){
-        if( j > 0 ){
-            cout << trace_align2.sequence[j-1] << " ";
-        }
-        for( int i = 0; i <= n; i++ ){
-            cout.width( 3 );
-            cout << this -> M[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-// Print the traceback matrix
-void  Class_align::print_M_match(int n, int m){
-    cout << "        ";
-    for( int i = 0; i < n; i++ ){
-        cout << trace_align1.sequence[i] << "   ";
-    }
-    cout << "\n  ";
-
-    for( int j = 0; j <= m; j++ ){
-        if( j > 0 ){
-            cout << trace_align2.sequence[j-1] << " ";
-        }
-        for( int i = 0; i <= n; i++ ){
-            cout.width( 3 );
-            cout << this -> M_match[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-//################################################################################## Alligator2, Big Money-nw, Gradient, Katana
-/*
- $$$$$$\  $$\ $$\                                                 $$\           
-$$  __$$\ $$ |\__|                                                \__|          
-$$ /  $$ |$$ |$$\  $$$$$$\  $$$$$$$\           $$$$$$\   $$$$$$\  $$\  $$$$$$\  
-$$$$$$$$ |$$ |$$ |$$  __$$\ $$  __$$\         $$  __$$\  \____$$\ $$ |$$  __$$\ 
-$$  __$$ |$$ |$$ |$$ /  $$ |$$ |  $$ |        $$ /  $$ | $$$$$$$ |$$ |$$ |  \__|
-$$ |  $$ |$$ |$$ |$$ |  $$ |$$ |  $$ |        $$ |  $$ |$$  __$$ |$$ |$$ |      
-$$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |  $$ |        $$$$$$$  |\$$$$$$$ |$$ |$$ |      
-\__|  \__|\__|\__| \____$$ |\__|  \__|$$$$$$\ $$  ____/  \_______|\__|\__|      
-                  $$\   $$ |          \______|$$ |                              
-                  \$$$$$$  |                  $$ |                              
-                   \______/                   \__|                              
-*/
-void Class_align::alignment_global_pairwize(vector<int> &Alignment1,vector<int> &Alignment2){
-	//******** INIT VARIABLES ****************
-	int i = trace_align1.sequence.size();
-	int j = trace_align2.sequence.size();
-	cout << i << "-"<< j << endl;
-
-	//******** CREATE THE ALIGNED SEQUENCE ***
-	while(i > 0 || j > 0){
-		if(i>0 && j>0 && (M_match[i][j] == '\\')){
-			Alignment1.push_back(trace_align1.sequence[i-1]);
-			Alignment2.push_back(trace_align2.sequence[j-1]);
-			i--;
-			j--;
-		} else if(i>0 && M_match[i][j] == '|'){
-				Alignment1.push_back(trace_align1.sequence[i-1]);
-				Alignment2.push_back(-1);
-				i--;
-			} else {
-				Alignment1.push_back(-1);
-				Alignment2.push_back(trace_align2.sequence[j-1]);
-				j--;
-		}
-	}
-
-	// Since the two vector were build from the end, we need to reverse them.
-	reverse(Alignment1.begin(), Alignment1.end());
-	reverse(Alignment2.begin(), Alignment2.end());
-}
-
-//##################################################################################
-/*
-$$$$$$$\            $$\            $$\                    $$\ $$\                     
-$$  __$$\           \__|           $$ |                   $$ |\__|                    
-$$ |  $$ | $$$$$$\  $$\ $$$$$$$\ $$$$$$\         $$$$$$\  $$ |$$\  $$$$$$\  $$$$$$$\  
-$$$$$$$  |$$  __$$\ $$ |$$  __$$\\_$$  _|        \____$$\ $$ |$$ |$$  __$$\ $$  __$$\ 
-$$  ____/ $$ |  \__|$$ |$$ |  $$ | $$ |          $$$$$$$ |$$ |$$ |$$ /  $$ |$$ |  $$ |
-$$ |      $$ |      $$ |$$ |  $$ | $$ |$$\      $$  __$$ |$$ |$$ |$$ |  $$ |$$ |  $$ |
-$$ |      $$ |      $$ |$$ |  $$ | \$$$$  |     \$$$$$$$ |$$ |$$ |\$$$$$$$ |$$ |  $$ |
-\__|      \__|      \__|\__|  \__|  \____/$$$$$$\\_______|\__|\__| \____$$ |\__|  \__|
-                                          \______|                $$\   $$ |          
-                                                                  \$$$$$$  |          
-                                                                   \______/           
-*/
-int word_length(int word){
-	switch(word){
-		case -1: return 1;
-		case 0: return 1;
-		default: return (to_str<int>(word).length());
-	}
-}
-string word_to_string(int word){
-	switch(word){
-		case -1: return "_ ";
-		case 0: return "- ";
-		default: return 'E' + to_str<int>(word);
-	}
-}
-void Class_align::print_Alignment(Type_trace trace1, Type_trace trace2){
-	string alignement1_out = "";
-	string alignement2_out = "";
-	string matching = "";
-	int word_seq1, word_seq2;
-	for(int i=0;i < trace1.sequence.size(); i++){
-		word_seq1 = word_length(trace1.sequence[i]);
-		word_seq2 = word_length(trace2.sequence[i]);
-		if(word_seq1 < word_seq2){
-			alignement1_out += word_to_string(trace1.sequence[i]) + ' ';
-			alignement1_out += ' '*(word_seq2-word_seq1);
-			alignement2_out += word_to_string(trace2.sequence[i]) + ' ';
-		} else {
-			alignement1_out += word_to_string(trace1.sequence[i]) + ' ';
-			alignement2_out += word_to_string(trace2.sequence[i]) + ' ';
-			alignement2_out += ' '*(word_seq1-word_seq2);
-		}
-	}
-	int length_id = trace1.header.length();
-	cout << trace1.header << ' ' << alignement1_out + "S" << endl;
-	cout << trace2.header << ' ' << alignement2_out + "S" << endl;
-}
-
-//##################################################################################
+//****************************************************************
 /*
 $$\      $$\           $$\   $$\     $$\         $$$$$$\  $$\ $$\                     
 $$$\    $$$ |          $$ |  $$ |    \__|       $$  __$$\ $$ |\__|                    
@@ -352,7 +95,7 @@ $$ | \_/ $$ |\$$$$$$  |$$ |  \$$$$  |$$ |       $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |
                                                                   \$$$$$$  |          
                                                                    \______/           
 */
-//############################################################
+//****************************************************************
 /*
 	Constructor for the classe
 */
@@ -371,7 +114,7 @@ void Multi_Align::init_trace_list(string file_name){
 	number_of_traces = n_line;
 }
 
-//############################################################
+//****************************************************************
 /*
 	To calculate the distance between two matrix, and more precisely,
 	the difference between D_prec and D.
@@ -425,10 +168,11 @@ void print_tri_matrix(vector<matri> &D){
 	}
 }
 
-//############################################################
+//****************************************************************
 vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list){
 	// Number of sequences:
 	int n = trace_list.size();
+	int score;
 	// Initialization of a triangular matrix localy before throwing it back.
 	vector<matri> tri_matrix(n);
 	tri_matrix[0].header = trace_list[0].header;
@@ -437,296 +181,17 @@ vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list){
 		tri_matrix[i].ligne = vector<float>(i);
 		for(int j=0; j<i;j++){
 			// For each pair we aligned using the Class_align and it's function. It needed two matrix
-			int n = trace_list[i].sequence.size();
-			int m = trace_list[j].sequence.size();
-			int** M = new int* [n+1];
-			for(int i=0; i< n+1; i++){
-				M[i] = new int [m+1];
-			}
-			char** M_match = new char* [n+1];
-			for(int i=0; i< n+1; i++){
-				M_match[i] = new char [m+1];
-			}
-
-			Class_align align_pairwize(trace_list[i],trace_list[j],M, M_match);
-			align_pairwize.init_matrix_align(n,m);
-			// The alignment score is the last score of the matrix.
-			tri_matrix[i].ligne[j] = M[n][m];
+			score = run_align_global_score(trace_list[i],trace_list[j]);
+			tri_matrix[i].ligne[j] = score;
 			tri_matrix[i].header = trace_list[i].header;
 
-			// We can then deallocate memory
-			for(int i=0; i<n; i++){
-				delete M[i];
-				delete M_match[i];
-			}
-			delete[] M;
-			delete[] M_match;
-			
 		}
 	}
 	return tri_matrix;
 }
 
-//******************************************************************************
-/*
-	La méthode utilisée pour calculer la distance entre 2 séquences,
-	donne un score d'autant plus élevé que 2 séquences sont
-	similaires (les évènements et longues séquences sont favorisés).
-*/
-void find_maximum(const vector<matri> &D, int &i_min, int &j_min, float &value){
-	//cout << "# Chercher maximum\n";
-	const int n=D.size();	// Number of sequences
-	value = 0;
-	for(int i=0;i<n;i++){
-		for(int j=0;j<D[i].ligne.size();j++){
-			if(value<D[i].ligne[j]){
-				value = D[i].ligne[j];
-				//cout << value;
-				i_min = i; // Comme la diagonale n'est pas modélisée, les numéros de colonnes sont plus petit de 1
-				j_min = j;
-			}
-		}
-	}
-	//cout << "Value : " << value << "|i-" << i_min << " j-" << j_min <<endl;
-}
-void supprimer_ligne(vector<matri> &D, const int &r){
-	//cout << "# Supprimer ligne\n";
-	const int n=D.size();	// Number of sequences
-	if (n > r){
-		D.erase( D.begin() + r );
-	}
-}
-void supprimer_colonne(vector<matri> &D, const int &r){
-	//cout << "# Supprimer colonne\n";
-	const int n=D.size();	// Number of sequences
-	for (int i = 0; i < n; i++){
-		if (D[i].ligne.size() > r){
-			D[i].ligne.erase(D[i].ligne.begin() + r);
-  		}
-	}
-}
 
-float dissim_lign(vector<matri> &D, int i_min, int j_min, int i){
-	//TODO Add explanation
-	const int n=D.size()-1;	// Number of sequences
-	float i_val,j_val;
-	float result;
-	//cout << "| Dissim lign" << i+1 << endl;
-	i_val = D[i_min].ligne[i];
-	//cout << " -> i_val " << i_val;
-	j_val = D[j_min].ligne[i];
-	//cout << " -> j_val " << j_val;
-	//cout << endl;
-	result = (i_val + j_val)/2;
-	//cout << "Result: " << result << "(i"<< i_min << '.' << i <<":" << i_val << ") (j" << j_min << '.' << i << ":" << j_val << ")\n";
-	return result;
-}
-float dissim_col(vector<matri> &D, int i_min, int j_min, int i, int &i_save){
-	//TODO Add explanation
-	const int n=D.size()-1;	// Number of sequences
-	int index_i, index_j;
-	float i_val,j_val;
-	float result;
-	//cout << "| Dissim col" << i+1 << endl;
-	if((j_min+i) < D[i_min].ligne.size()){
-		i_val = D[i_min].ligne[j_min+i];
-		index_i = i_min;
-		index_j = j_min+i;
-	} else{
-		//if(i_save==0) {i_save = i+2;} // On récupère la valeur de i du tour d'avant, c'est le nombre de chiffre qu'il reste à changer
-		//cout << "----------" << i_save << endl;
-		i_save++;
-		i_val = D[D[i_min].ligne.size()+i_save].ligne[i_min];
-		index_i = D[i_min].ligne.size()+i_save;
-		index_j = i_min;
-	}
-	//cout << " -> i_val " << i_val;
-	j_val = D[j_min+1+i].ligne[j_min];
-	//cout << " -> j_val " << j_val;
-	//cout << endl;
-	result = (i_val + j_val)/2;
-	//cout << "Result: " << result << "(i"<< index_i << '.' << index_j <<":" << i_val << ") (j" << j_min+1+i << '.' << j_min << ":" << j_val << ")\n";
-	return result;
-}
-
-//********************************************************************************
-/*
-$$$$$$$$\                                   $$$$$$\                                 $$\               
-\__$$  __|                                 $$  __$$\                                $$ |              
-   $$ | $$$$$$\   $$$$$$\   $$$$$$\        $$ /  \__| $$$$$$\   $$$$$$\   $$$$$$\ $$$$$$\    $$$$$$\  
-   $$ |$$  __$$\ $$  __$$\ $$  __$$\       $$ |      $$  __$$\ $$  __$$\  \____$$\\_$$  _|  $$  __$$\ 
-   $$ |$$ |  \__|$$$$$$$$ |$$$$$$$$ |      $$ |      $$ |  \__|$$$$$$$$ | $$$$$$$ | $$ |    $$$$$$$$ |
-   $$ |$$ |      $$   ____|$$   ____|      $$ |  $$\ $$ |      $$   ____|$$  __$$ | $$ |$$\ $$   ____|
-   $$ |$$ |      \$$$$$$$\ \$$$$$$$\       \$$$$$$  |$$ |      \$$$$$$$\ \$$$$$$$ | \$$$$  |\$$$$$$$\ 
-   \__|\__|       \_______| \_______|$$$$$$\\______/ \__|       \_______| \_______|  \____/  \_______|
-                                     \______|                                                         
-*/
-TArbreBin<string>* build_tree(vector<matri> &D_aux, vector<TArbreBin<string>*> &subtrees,
-								vector<string> &seq_prec_vector,
-								float value, int k, int r){
-	//***** INIT VARIABLES ******
-	TArbreBin<string>* root;
-
-	bool trouver = false;
-
-	//**** DEBUT ****************
-	//cout << "---------------------------\n# " << D_aux.size() << endl;
-	trouver = false;
-		// If we one of the sequence chosen to pair has been paired before, we had only the new leaf
-		//cout << "---------------------Size vector prec : " << seq_prec_vector.size() << endl;
-		int iter = 0;
-		//cout << "r: " << D_aux[r].header << "    " << "k: " << D_aux[k].header << endl;
-
-		for(int i=0;i<seq_prec_vector.size();i++){
-			//cout << seq_prec_vector[i] << "_" << i << "/";
-			if(D_aux[r].header == seq_prec_vector[i]){
-				int cpt=0;
-				while(D_aux[k].header != seq_prec_vector[cpt] && cpt < seq_prec_vector.size()){
-					cpt++;
-				}
-				if(cpt < seq_prec_vector.size()){
-					// We have found a match for r and k
-					//cout << "# Trouver r and k\n";
-					root =  new TArbreBin<string>(to_str<float>(value));
-					root -> fg = subtrees[i];
-					root -> fd = subtrees[cpt];
-					subtrees[cpt] = root;
-				} else {
-					//cout << "# Trouver r\n";
-					root =  new TArbreBin<string>(to_str<float>(value));
-					root -> fg = subtrees[i];
-					root -> fd = new TArbreBin<string>(D_aux[k].header);
-					subtrees[i] = root;
-					subtrees.push_back(root);
-					seq_prec_vector.push_back(D_aux[k].header);	
-				}
-				trouver = true;
-				break;
-			}
-			if(D_aux[k].header == seq_prec_vector[i]){
-				int cpt=0;
-				while(D_aux[r].header != seq_prec_vector[cpt] && cpt < seq_prec_vector.size()){
-					cpt++;
-				}
-				if(cpt < seq_prec_vector.size()){
-					// We have found a match for r and k
-					//cout << "# Trouver k and r\n";
-					root =  new TArbreBin<string>(to_str<float>(value));
-					root -> fg = subtrees[cpt];
-					root -> fd = subtrees[i];
-					subtrees[i] = root;
-				} else {
-					//cout << "# Trouver k\n";
-					root =  new TArbreBin<string>(to_str<float>(value));
-					root -> fg = new TArbreBin<string>(D_aux[r].header);
-					root -> fd = subtrees[i];
-					subtrees[i] = root;
-				}
-				trouver = true;
-				break;
-			}
-		}
-		//cout << endl;
-		if(!trouver){
-			//cout << "# Nouvel arbre\n";
-			root =  new TArbreBin<string>(to_str<float>(value));
-			root -> fg = new TArbreBin<string>(D_aux[k].header);
-			root -> fd = new TArbreBin<string>(D_aux[r].header);
-			subtrees.push_back(root);
-			seq_prec_vector.push_back(D_aux[k].header);		
-		}
-		//for(int i=0;i<seq_prec_vector.size();i++) cout << seq_prec_vector[i] << "_" << i << "/";
-		//cout << endl;
-
-	//cout << "---------------------------\n";
-	return root;
-}
-//####################################################################################
-/*
- $$$$$$\   $$$$$$\  $$\   $$\ 
-$$  __$$\ $$  __$$\ $$ |  $$ |
-$$ /  \__|$$ /  $$ |$$ |  $$ |
-$$ |      $$$$$$$$ |$$$$$$$$ |
-$$ |      $$  __$$ |$$  __$$ |
-$$ |  $$\ $$ |  $$ |$$ |  $$ |
-\$$$$$$  |$$ |  $$ |$$ |  $$ |
- \______/ \__|  \__|\__|  \__|                         
-*/
-//TODO Needs to add a way to save the tree and print it
-void CAH(vector<matri> &D, TArbreBin<string>* &root){
-	int n=D.size();	// Number of sequences
-	vector<matri> D_aux = D;
-	int i_min,j_min = 0;
-	//float i_minf,j_minf;
-	int k=-1, r;
-	int i_save;
-	float value;
-	TArbreBin<string>* root_prec;
-	vector<TArbreBin<string>*> subtrees;
-	vector<string> seq_prec_vector;
-	
-	//print_tri_matrix(D_aux);
-	cout << "# Construire Arbre\n";
-	//supprimer_ligne(D_aux,0);
-	while(n>1){
-		i_save = 0;
-		find_maximum(D_aux,i_min,j_min, value);
-		
-		k = min(i_min,j_min);
-		//cout << "k: " << k << endl;
-		/*
-			Le nouvel item obtenu par agglomération
-			i0 et j0 sera positionné à l'indice k
-			dans D_aux mis à jour.
-		*/
-		r = max(i_min,j_min);
-		//cout << "r: " << r << endl;
-		//cout << "& Nom de séquence: " << D_aux[k].header << " et " << D_aux[r].header << endl;
-		//--------------------------------------------------
-		/*
-			Faisons des arbres :D
-		*/
-		root = build_tree(D_aux, subtrees, seq_prec_vector,value, k, r);
-		//--------------------------------------------------
-	
-		//D_aux[k].header += '-' + D_aux[r].header;
-		/*
-			Mettre à jour les valeurs de la colonne k
-			et de la ligne k.
-		*/
-		for(int i=1;i<n-k;i++){
-			//cout << "# Dissim truc colonne " << n-k-1 << " en " << D_aux[i+k].ligne[k] << endl;
-			D_aux[i+k].ligne[k]=dissim_col(D_aux,i_min,j_min,i-1,i_save);
-			//cout << i << '/';
-		}
-		//cout << endl;
-		//print_tri_matrix(D_aux);
-		int taille_ligne = D_aux[k].ligne.size();
-		for(int j=0;j<D_aux[k].ligne.size();j++){
-			//cout << "# Dissim truc ligne (size: " << D_aux[k].ligne.size() << ")\n";
-			if(j!=r){
-				//cout << "- Pos " << D_aux[k].ligne[j] << endl;
-				D_aux[k].ligne[j]=dissim_lign(D_aux,i_min,j_min,j);
-				//print_tri_matrix(D_aux);
-			}
-			//cout << j << '/';
-		}
-		//cout << endl;
-		//print_tri_matrix(D_aux);
-
-		supprimer_ligne(D_aux,r);
-		supprimer_colonne(D_aux,r-1);	
-		n--;
-		//print_tri_matrix(D_aux);
-	}
-	//root->printBTS();
-
-	//******* FREE MEMORY *******
-	subtrees.clear();subtrees.shrink_to_fit();
-	seq_prec_vector.clear();seq_prec_vector.shrink_to_fit();
-}
-
-//############################################################
+//****************************************************************
 /*
 $$$$$$$\                                                $$\     $$\                               
 $$  __$$\                                               $$ |    \__|                              
@@ -766,74 +231,62 @@ void Multi_Align::print_align(vector<Type_trace> list_aligned){
 		//cout << endl;
 	}
 }
-
+//****************************************************************
 bool node_before_leaf(TArbreBin<string> *node){
-	if(node -> fg -> fg == NULL &&
-		node -> fg -> fd == NULL &&
-		node -> fd -> fg == NULL &&
-		node -> fd -> fd == NULL){
+	if((node -> fg -> fg == NULL) &&
+		(node -> fg -> fd == NULL) &&
+		(node -> fd -> fg == NULL) &&
+		(node -> fd -> fd == NULL)){
 			return true;
 		} else return false;
 }
-
+//****************************************************************
 void find_pair_in_tree(TArbreBin<string> *node, tree_ptr* &pair, float &value_max){
 	float value;
 	if(node != NULL){
 		value = atof((node->data).c_str());
-		//cout << value << "/";
 		if (value > value_max && node_before_leaf(node) ){value_max = value; pair -> node = node;}
 		find_pair_in_tree(node -> fg, pair, value_max);
 		find_pair_in_tree(node -> fd, pair, value_max);
 	}
 }
+//****************************************************************
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
+													TArbreBin<string>* &copy_pair,
 													vector<Type_trace> trace_list,
-													float &score,
-													string &name_trace_to_remove){
+													float &score_prec,
+													string &name_remove, string &name_kept){
 	vector<Type_trace> trace_to_align;
 	tree_ptr *pair;
 	float value_max = 0.0;
-	int i = 0;
+	int score, i = 0;
 	bool trouver, trouver1, trouver2;
 	trouver = trouver1 = trouver2 = false;
-	Type_trace trace_1, trace_2, trace_align_1, trace_align_2;
+	Type_trace trace_1, trace_2, trace_align_1, trace_align_2, last_trace;
 	int index_trace_1, index_trace_2;
 	string pair_name;
 
-	//cout << "========================\n";
-	//cout << "Find pair: ";
-	find_pair_in_tree(root, pair, value_max);
-	cout << endl;
-	//pair -> node -> printBTS();
+	//*##### PROTECTION OF LAST TRACE 	#####
+	last_trace = trace_list[trace_list.size()-1];
 
-	//******* PAIR FOUND: PROJECTION *******
+	pair -> node = new TArbreBin<string>("pomme");
+	//*##### SEARCHING PAIR 			#####
+	find_pair_in_tree(root, pair, value_max);
+
+	//*##### PAIR FOUND: PROJECTION 	#####
 	while(i<trace_list.size() && !trouver){
 		if(pair -> node -> fg -> data == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
 		if(pair -> node -> fd -> data == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
 		if(trouver1 && trouver2){trouver = true;}
 		i++;
 	}
-	int n = trace_1.sequence.size();
-	int m = trace_2.sequence.size();
-	int** M = new int* [n+1];
-	for(int i=0; i< n+1; i++){
-		M[i] = new int [m+1];
+
+	if(trace_1.header == last_trace.header){
+		trace_1.sequence = last_trace.sequence;
+	} else if ( trace_2.header == last_trace.header){
+		trace_2.sequence = last_trace.sequence;
 	}
-	char** M_match = new char* [n+1];
-	for(int i=0; i< n+1; i++){
-		M_match[i] = new char [m+1];
-	}
-	Class_align pair_align(trace_1, trace_2, M, M_match);
-	pair_align.init_matrix_align(n,m);
-	pair_align.alignment_global_pairwize(trace_align_1.sequence, trace_align_2.sequence);
-	score += M[n][m];
-	// We can then deallocate memory
-	for(int i=0; i<n; i++){
-		delete M[i];
-		delete M_match[i];
-	}
-	delete[] M;
-	delete[] M_match;
+	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2,score);
 
 	for(int i=0;i<trace_list.size();i++){
 		if(trace_list[i].header == trace_1.header) {index_trace_1 = i; trace_list[i].sequence = trace_align_1.sequence;}
@@ -841,16 +294,38 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	}
 	move(trace_list,index_trace_2,index_trace_1+1);
 
-	//****** RETURN AND DELETE NODE ******
+	//*##### ADD PAIR TO FINAL_TREE #####
+	copy_pair = pair -> node;
+	//print_Type_trace(trace_1);
+	trace_align_1.header = trace_1.header;
+	//print_Type_trace(trace_align_1);
+	/*for(int i=0;i<trace_align_1.sequence.size();i++){
+		if(trace_align_1[i] != trace_1){
+
+		}
+	}*/
+	score_prec += score;
+	//##### RETURN AND DELETE NODE #####
+	name_remove = trace_1.header;
+	name_kept = trace_2.header;
 	pair_name = trace_1.header + trace_2.header;
-	pair -> node -> fg = NULL;
-	pair -> node -> fd = NULL;
-	pair -> node -> data = pair_name;
-	//pair->delete_tree(pair, pair_name);
-	name_trace_to_remove = trace_1.header;
+	//pair -> node -> fg = NULL;
+	//pair -> node -> fd = NULL;
+	//pair -> node -> data = name_kept;
+	//print_Type_trace(trace_list[trace_list.size()-1]);
 	return trace_list;
 }
 
+//****************************************************************
+void insert_gap_by_pair(Type_trace &trace_1, Type_trace &trace_2){
+	for(int i=0;i<trace_2.sequence.size();i++){
+		if(trace_2.sequence[i] == -1){
+
+		}
+	}
+}
+
+//****************************************************************
 /*
  $$$$$$\                                       $$\      $$\  $$$$$$\   $$$$$$\  
 $$  __$$\                                      $$$\    $$$ |$$  __$$\ $$  __$$\ 
@@ -863,34 +338,57 @@ $$ |  $$\ $$ |  $$ |$$ |      $$   ____|       $$ |\$  /$$ |$$\   $$ |$$ |  $$ |
                                         \______|                                
                                                                                 
 */
+void sort_trace_list(TArbreBin<string>* node,
+					vector<Type_trace> trace_align,
+					vector<Type_trace> &trace_align_sorted){
+	if(node != NULL){
+		int i=0;
+		while(node -> data != trace_align[i].header && i < trace_align.size()){
+			i++;
+		}
+		if(i < trace_align.size()){
+			trace_align_sorted.push_back(trace_align[i]);
+		}
+		sort_trace_list(node ->fg, trace_align, trace_align_sorted);
+		sort_trace_list(node ->fd, trace_align, trace_align_sorted);
+	}
+}
+//****************************************************************
 // TODO FINISH THIS GODDAMN MOTHERFUCKER
 // le nombre de séquences
 void Multi_Align::multiple_alignment(float seuil){
-	//*** INIT VAR	****
-	TArbreBin<string> *T,*T_prec;
+	//##### INIT VAR	#####
+	TArbreBin<string> *T,*T_prec, *tree_final, *copy_pair;
+	vector<TArbreBin<string>*> subtrees;
+	vector<string> seq_prec_vector;		
 	trace_align = trace_list;
-	vector<Type_trace> list_aligned;
+	vector<Type_trace> list_aligned, trace_align_sorted;
 	vector<matri> D(trace_list.size());
 	vector<matri> D_prec(trace_list.size());
 	bool convergence;
 	float score = 0;
-	string name_trace_to_remove;
+	string name_remove, name_kept;
 	// List of sequences is define in the class
 	// type_alignment is a vector of traces define in the class: trace_align
 
-	//*** DEBUT		****
+	//*##### DEBUT		#####
 	convergence = false;
 	create_tringular_matrix(D_prec);
 	cout << "- Number of sequences: " << number_of_traces << endl;
 
 	int i = 1;
 	cout << "# Début boucle\n";
-	while(i < number_of_traces-1){
+	while(i < number_of_traces){ 
 		if(i==1){
 			cout << "# Dissimilarity\n";
 			D = calcul_dissimilarite(trace_list);
 			cout << "- Calcul réussi\n";
-		} else D = calcul_dissimilarite(trace_align);	// We have already done a multiline alignment
+		} else { // We have already done a multiline alignment
+			D = calcul_dissimilarite(trace_align);
+			if(i==number_of_traces-1){
+				trace_align[trace_align.size()-1] = trace_list[number_of_traces-1];
+			}
+		}	
 		//if(difference(D,D_prec) <= seuil){convergence = true; break;}
 		// convergence = false
 		CAH(D, T);
@@ -899,12 +397,19 @@ void Multi_Align::multiple_alignment(float seuil){
 			//cout << "================= Affichage alignment multiple ===\n";
 			//T_prec -> printBTS();
 		}
-		T ->printBTS();
-		trace_align = aligner_sequences_ou_projection(T, trace_align, score, name_trace_to_remove);
-		//trace_list = trace_align;
+		//T ->printBTS();
+		trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, score, name_remove, name_kept);
+		
+		//*##### BUILD FINAL TREE #####
+		//cout << "================= Affichage arbre ===\n";
+		//copy_pair -> printBTS();	
+		//T ->printBTS();
+		//build_final_tree(subtrees, seq_prec_vector, copy_pair, tree_final, name_remove, name_kept);
 
+		//*##### REMOVE ONE TRACE OF THE PAIR WHICH WAS PROJECTED #####
+		//trace_list = trace_align;
 		int cpt = 0;
-		while(trace_align[cpt].header != name_trace_to_remove){
+		while(trace_align[cpt].header != name_remove){
 			cpt++;
 		}
 		list_aligned.push_back(trace_align[cpt]);
@@ -912,35 +417,17 @@ void Multi_Align::multiple_alignment(float seuil){
 		D_prec = D;
 		i++;
 	}
-	//T_prec -> printBTS();
+
+	// We add the final trace to the list of aligned traces.
+	list_aligned.push_back(trace_align[0]);
+
+	//###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
+	cout << "================= Affichage arbre complet ===\n";
+	T_prec -> printBTS();
+	tree_final -> printBTS();
+	sort_trace_list(T_prec, list_aligned, trace_align_sorted);
+
 	cout << "================= Affichage alignment multiple ===\n";
-	print_align(list_aligned);
-	print_align(trace_align);
+	print_align(trace_align_sorted);
 	cout << "== Score: " << score << endl;
-}
-
-//#################################################################
-/*
-	Affiche un bel arbre.
-	└──A
-		├──B
-		│   ├──R
-		│   └──S
-		└──C
-			└──D
-
-*/
-template<typename T>
-void TArbreBin<T>::printBTS(){
-	this -> printBTS("",false);
-}
-template<typename T>
-void TArbreBin<T>::printBTS(const string& prefix, bool isLeft){
-	if(this != NULL){
-		cout << prefix;
-		cout << (isLeft ? "├──" : "└──");
-		cout << data << endl;
-		fg -> printBTS(prefix + (isLeft ? "│   " : "    "), true);
-		fd -> printBTS(prefix + (isLeft ? "│   " : "    "), false);
-	}
 }

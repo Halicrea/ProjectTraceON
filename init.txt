@@ -7,6 +7,6 @@ E1<()*>E4<()*>E7()S
 E2<()+>E8()E12<()E13|E89X3|E14X5>E46<()*>S
 
 Nombre_traces:
-30
+20
 Taille:
 20
