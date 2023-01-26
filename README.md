@@ -23,27 +23,34 @@ Exemple de syntaxe de génération de trace:
 ## Génération de données
 # launch_data_generation_toy_example.py
 Pour générer un jeu de données aléatoire vous devez lancer dans un terminal le fichier python suivant:
-launch_data_generation_toy_example.python
+launch_data_generation_toy_example.py
 
 Le tout doit être suivi par le chiffre 1 ou 2 en fonction de la difficulté des données que vous souhaitez obtenir. 
-Avec 1 pour facile et 2 pour difficile. Puis en fonction de ses paramètre va les lire dans le fichier Init.txt et renvoie ses informations au fichier main_TraceON.cpp
+Avec 1 pour facile et 2 pour difficile. Puis en fonction de ses paramètre le script va lire dans le fichier Init.txt et renvoie ses informations au fichier main_TraceON.cpp
 
 # Init.txt
 Ce fichier texte sert d'initialisation au script Python vu au dessus, et va le renseigner sur le type de données voulus, leur nombres et leur tailles. 
 
 Il peut être modifiable à volonté par l'ulitisateur pour adapter le programme à ses besoins:
 A la condition que ses modifications s'applique sur le niveau de difficulté de la génération de données et non sur les lignes "1) facile:" (ligne 4) et "2) difficile" (ligne 6).
-Ainsi que sur le nombre et la longueur des séquences voulus et non sur les lignes "Nombres_traces:" (ligne 9) et "Taille:" (ligne 11).
+Attention la syntaxe de génération de trace doit être respecté.
+L'utilisateur peut aussi modifier le nombre et la longueur des séquences voulus sur la ligne 10 et 12 et non sur les lignes "Nombres_traces:" (ligne 9) et "Taille:" (ligne 11).
 
 # main_TraceON.cpp
-Fichier principal en C++ qui après avoir obtenus les informations envoyés par le fichier  launch_data_generation_toy_example.py, il détecte les différentes ancres, leur nombres 
-ainsi que leur position et fait appel à des fonctions présentent dans le fichier trace_generator.cpp en fonction des informations envoyés par le pichier Python et les mets dans un fichier texte.
+Fichier principal de la génération de trace en C++, qui après avoir obtenus les informations envoyés par le fichier launch_data_generation_toy_example.py détecte les différentes ancres, leur nombres ainsi que leur position et fait appel à des fonctions présentent dans le fichier trace_generator.cpp en fonction des informations envoyés par le pichier Python 
+et les mets dans un fichier texte "Test.txt".
 
 # trace_generator.cpp
 Fichier C++ qui contient toutes les fonctions utile à main_TraceON.cpp pour la création des données aléatoire.
 
+# trace_generator.hpp
+Fichier d'en-tête de trace_generator.cpp
+
 # simple_functions.cpp
-Fichier C++ contenant  des fonctions utiles au fonctionnement de trace_generator.cpp
+Fichier C++ contenant des fonctions et procédure simple mais utiles au fonctionnement de trace_generator.cpp
+
+# simple_functions.hpp
+Fichier d'en-tête de simple_functions.cpp
 
 # Test.txt
 Ce fichier texte est le fichier de résultats des séquences obtenus aléatoirement.
@@ -51,5 +58,10 @@ Ce fichier texte est le fichier de résultats des séquences obtenus aléatoirem
 
 ## Alignement des séquences
 # main_align.cpp
+Fichier principal d'alignement des séquences en C++, il va aligner les séquences obtenus avec le fichier main_Trace_ON.cpp grace à des fonctions et procédure présente dans le fichier alignement.cpp
 
 # alignement.cpp
+Fichier C++ contenant toutes les fonctions et procédure nécesaire  à l'alignement multiple, à la création de matrice triangulaire et d'arbre binaire.
+
+# alignement.hpp
+Fichier d'en-tête de alignement.cpp
