@@ -43,8 +43,8 @@ int main(int argc, char *argv[]){
 	string file_score_output = argv[7];
 	string line;
 	string s_gap_initial, s_gap_penalty, s_seuil;
-	bool display_tree = false;
-	if(argv[4] == "Yes") display_tree = true;
+	bool display_tree = true;
+	if(argv[4] == "no") display_tree = false;
 	
 	cout << "Utilisations des paramètres: " << file_traces << ", " << file_MSA_output << ", " << file_score_output << endl;
 	cout << "Init: " << argv[1] << " / " << argv[2] << " / " << argv[4] << endl;
@@ -60,17 +60,12 @@ int main(int argc, char *argv[]){
 	cout << "==================================================\n";
 	cout << "                 MULTI ALIGN\n";
 	Multi_Align alignement_multiple;
-	//string file_traces = "Test.txt";
-	//int seuil = 10, gap_initial = 10, gap_penalty = 1;
+
+
 	alignement_multiple.init_trace_list(file_traces);
 	alignement_multiple.multiple_alignment(file_traces, file_MSA_output, file_score_output, 
 											seuil, gap_initial, gap_penalty);
-
-	//*#####	At the end we add S and print to file	##########
-
-
-
-	
+	alignement_multiple.print_tree(display_tree);
 
 	return 0;
 }

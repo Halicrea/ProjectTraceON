@@ -284,7 +284,6 @@ void CAH(vector<matri> D, TArbreBin<string>* &root,
 	vector<TArbreBin<string>*> subtrees;
 	vector<string> seq_prec_vector;
 
-	cout << D.size() << " - " << score <<endl;
 	while(n>1){
 		i_save = 0;
 		find_maximum(D_aux,i_min,j_min, value);

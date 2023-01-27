@@ -241,7 +241,7 @@ string Multi_Align::print_align(vector<Type_trace> list_aligned, float score_fin
 		sequence += "S\n";
 
 	}
-	sequence += "== Score: " + to_str<float>(score_final) + '\t';
+	sequence += "== Score: " + to_str<float>(score_final) + '\n';
 	return sequence;
 }
 //****************************************************************
@@ -352,24 +352,24 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 	pair -> fg = new TArbreBin<string>(name_remove);
 	pair -> fd = new TArbreBin<string>(name_kept);
 
-	cout << "# TEST " << trace_list.size() << endl;
+	//cout << "# TEST " << trace_list.size() << endl;
 	if(trace_list.size() == 2){
 		print_Type_trace(trace_list[0]);
 		print_Type_trace(trace_list[1]);
-		cout << "LAST PAIR \n";
-		cout << "-";
+		//cout << "LAST PAIR \n";
+		//cout << "-";
 		index_trace_1 = 0;
 		index_trace_2 = 1;
-		cout << "-";
+		//cout << "-";
 		trace_1 = trace_list[index_trace_1];
 		trace_2 = trace_list[index_trace_2];
-		cout << "-";
+		//cout << "-";
 		run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score, gap_start, gap_weight);
-		cout << "-";
+		//cout << "-";
 		
 		trace_list[index_trace_1].sequence = trace_align_1.sequence;
 		trace_list[index_trace_2].sequence = trace_align_2.sequence;
-		cout << "-";
+		//cout << "-";
 		return trace_list;
 	}
 	//*##### PROTECTION OF LAST TRACE 	#####
@@ -400,7 +400,7 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 		if(trace_list[i].header == trace_2.header) {index_trace_2 = i; trace_list[i].sequence = trace_align_2.sequence;continue;}
 	}
 
-	cout << trace_list.size() << endl;
+	//cout << trace_list.size() << endl;
 	if(trace_list.size()> 2){
 		//cout << index_trace_1 << " - " << index_trace_2 << endl;
 		move(trace_list,index_trace_2,index_trace_1);
@@ -519,7 +519,7 @@ void Multi_Align::multiple_alignment(string file_traces, string file_MSA_output,
 	//*###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
 	cout << "================= Affichage arbre complet ===\n";
 	T_prec -> printBTS();
-	tree_final -> printBTS();
+	//tree_final -> printBTS();
 	sort_trace_list(T_prec, list_aligned, trace_align_sorted);
 
 	cout << "================= Affichage alignment multiple ===\n";
@@ -527,6 +527,7 @@ void Multi_Align::multiple_alignment(string file_traces, string file_MSA_output,
 	trace_align = trace_align_sorted;
 
 	//*###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
+	this -> root = tree_final;
 	this -> export_align(file_traces, file_MSA_output, file_score_output, trace_align_sorted, score_final);
 }
 

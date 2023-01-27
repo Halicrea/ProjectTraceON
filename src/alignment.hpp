@@ -17,6 +17,7 @@ class Multi_Align{
 	int number_of_traces;
 	vector<Type_trace> trace_list;
 	vector<Type_trace> trace_align;
+	TArbreBin<string>* root;
 	public:
 		Multi_Align(){
 			number_of_traces = 0;
@@ -31,6 +32,11 @@ class Multi_Align{
 		void export_align(string file_traces, string file_MSA_output,
 						string file_score_output, vector<Type_trace> trace_align_sorted,
 						float score_final);
+		void print_tree(bool display_tree){
+			if(display_tree){
+				root -> printBTS();
+			}
+		}
 
 };
 
