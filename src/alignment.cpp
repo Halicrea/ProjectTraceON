@@ -482,17 +482,14 @@ void Multi_Align::multiple_alignment(string file_traces, string file_MSA_output,
 		}	
 		//if(difference(D,D_prec) <= seuil){convergence = true; break;}
 		// convergence = false
-		//print_tri_matrix(D);
+
+		// Hierarchical clustering
 		CAH(D, T, score, name_remove, name_kept);
-		//cout << name_remove << " - " << name_kept << endl;
 		if(i<2){
 			T_prec = T;
-			//cout << "================= Affichage alignment multiple ===\n";
-			//T_prec -> printBTS();
 		}
-		//cout << D.size() << " - " << score <<endl;
-		
-		//T ->printBTS();
+
+		// Use the CAH for projection of the best pair
 		trace_align = aligner_sequences_ou_projection(copy_pair, trace_align, list_aligned, score, name_remove, name_kept, gap_start, gap_weight);
 		//*##### BUILD FINAL TREE #####
 
