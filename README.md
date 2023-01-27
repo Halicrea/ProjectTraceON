@@ -13,27 +13,33 @@ Pour pouvoir utiliser ce programme vous aurez besoin d'un terminal des biblioth�
 Pour pouvoir utiliser notre programme vous aurez besoin:
 
 - launch_data_generation_toy_example.py
+- launch_MSA_test.py
 - init.txt
+- init_MSA.txt
 - Test.txt
+- Test_output.txt
+- Test_Score.csv
 - un fichier bin contenant les executable de main_traceAlign et de mainTraceON
 - un fichier obj contenant les fichiers alignment.o, clustering.o, pairwize_global.o, simple_functions.o er trace_generator.o
 - un fichier src  contenant les fichiers alignment.cpp, aligment.hpp, clutering.cpp, clustering.hpp, main_align.cpp, main_TraceON.cpp, pairwize_global.cpp, pairwize_global.hpp, simple_functions.cpp, simple_functions.hpp struct.hpp, trace_generator.cpp et trace_generator.hpp
 
-## Installation et démarrage
+## Installation, démarrage et utilisation
 
-Pour lancer le programme, il vous suffit d'executer dans le repertoire courant le script Python "launch_data_generation_toy_example.py" attention à bien spécifier quel niveau de difficulté de données vous voulez obtenir après avoir écrit: ./launch_data_generation_toy_example.py dans votre terminal ("1" pour facile et "2" pour difficile).
+Pour lancer le programme, il vous suffit d'executer dans le répertoire courant le script Python "launch_data_generation_toy_example.py" attention à bien spécifier quel niveau de difficulté de données vous voulez obtenir après avoir écrit: ./launch_data_generation_toy_example.py dans votre terminal ("1" pour facile et "2" pour difficile).
 
 Il est possible de modifier la génaration de données aléatoire en modifiant le fichier init.txt tout en gardant les mêmes conventions  
 
 Les évènements peuvent ne pas être séquenciel, par exemple E5 avant E3 etc.  
 
-Dans le choix (2-5) par exemple, les évènements sont compris dans les tops (= ".")  
-
-Dans Ea1 <(tr1 - tr2)* >Ea2 : Ea1 et Ea2 ne peuvent pas être dans l'intervale
+Dans le choix (2-5) par exemple, les évènements sont compris dans les tops (= "."), dans Ea1 <(tr1 - tr2)* >Ea2 : Ea1 et Ea2 ne peuvent pas être dans l'intervale
 
 Exemple de syntaxe de génération de trace:
 > E4 < (3-10) E1_3 E2_2 I1 I2 > E5  
 > E1, E2, I1 et I2 doivent apparaître qu'une fois
+
+Une fois la génération de données effectué vous devrez lancer le deuxième script Python: "launch_MSA_test.py" dans le répertoire courant, et c'est celui-ci qui lancera l'alignement des séquences ainsi générées.
+
+L'alignement des séquences se créera dans le fichier "Test_output.txt" et les scores obtenus après alignement dans le fichier "Test_Score.csv".
 
 ## Auteurs
 
@@ -42,7 +48,7 @@ Exemple de syntaxe de génération de trace:
 
 ## Licence
 
-Ce projet est sous licence de l'université de Nantes Faculté des sciences et Techniques Master 2e année Bioinformatique pour les biologistes. 
+Ce projet est sous licence de le Faculté des sciences et Techniques de l'université de Nantes, Master 2e année Bioinformatique pour les biologistes. 
 
 
 
