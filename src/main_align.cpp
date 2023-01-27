@@ -52,16 +52,11 @@ int main(int argc, char *argv[]){
 	int gap_penalty = stoi(argv[2]);
 	int seuil = stoi(argv[3]);
 	
-	
-
 	//*#####	PROCESS	##########
-	
 	// We check the number of sequences and this length
 	cout << "==================================================\n";
 	cout << "                 MULTI ALIGN\n";
 	Multi_Align alignement_multiple;
-
-
 	alignement_multiple.init_trace_list(file_traces);
 	alignement_multiple.multiple_alignment(file_traces, file_MSA_output, file_score_output, 
 											seuil, gap_initial, gap_penalty);
