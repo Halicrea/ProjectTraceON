@@ -271,7 +271,7 @@ $$ |  $$\ $$ |  $$ |$$ |  $$ |
  \______/ \__|  \__|\__|  \__|                         
 */
 //TODO Needs to add a way to save the tree and print it
-void CAH(vector<matri> &D, TArbreBin<string>* &root,
+void CAH(vector<matri> D, TArbreBin<string>* &root,
 		float &score, string &name_remove, string &name_kept){
 	int n=D.size();	// Number of sequences
 	vector<matri> D_aux = D;
@@ -284,21 +284,24 @@ void CAH(vector<matri> &D, TArbreBin<string>* &root,
 	vector<TArbreBin<string>*> subtrees;
 	vector<string> seq_prec_vector;
 
+	cout << D.size() << " - " << score <<endl;
 	while(n>1){
 		i_save = 0;
 		find_maximum(D_aux,i_min,j_min, value);
 		
 		k = min(i_min,j_min);
-		name_kept = D_aux[k].header;
+		
 		/*
 			The new item obtained by agglomeration,
 			i0 and j0, will be put a the k index
 			and D_aux will be updated.
 		*/
 		r = max(i_min,j_min);
-		name_remove = D_aux[r].header;
-		score = value;
-
+		if(n == D.size()){
+			name_kept = D_aux[k].header;
+			name_remove = D_aux[r].header;
+			score = value;
+		}
 
 		//--------------------------------------------------
 		/*

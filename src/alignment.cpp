@@ -214,14 +214,16 @@ $$ |      $$ |      \$$$$$$  |$$ |\$$$$$$$\ \$$$$$$$\   \$$$$  |$$ |\$$$$$$  |$$
                          \______/                                                                 
 */
 //****************************************************************
-void Multi_Align::print_align(vector<Type_trace> list_aligned){
+string Multi_Align::print_align(vector<Type_trace> list_aligned, float score_final){
 	int word, word_max, length_seq;
-	string sequence;
+	string sequence = "";
 	int word_length_max = 1;
-	cout << "Taille: " << list_aligned.size() << endl;
-	cout << "NOM SEQ: " << "TAILLE\t" << "SEQUENCE\n";
+	sequence += "Taille: " + to_str<int>(list_aligned.size()) + '\n';
+	sequence += "NOM SEQ: ";
+	sequence += "TAILLE\t";
+	sequence += "SEQUENCE\n";
 	for(int n=0;n<list_aligned.size();n++){
-		sequence = list_aligned[n].header + ' ';
+		sequence += list_aligned[n].header + ' ';
 		length_seq = list_aligned[n].sequence.size();
 		sequence += to_str(length_seq) + "\t";
 		for(int i=0; i<list_aligned[n].sequence.size();i++){
@@ -236,9 +238,11 @@ void Multi_Align::print_align(vector<Type_trace> list_aligned){
 			sequence += word_to_string(word) + ' ';
 			//sequence += ' '*(word_length_max-word_length(word));   --> To align properly words, but tendance for corruption
 		}
-		cout << sequence + 'S' << endl;
+		sequence += "S\n";
 
 	}
+	sequence += "== Score: " + to_str<float>(score_final) + '\t';
+	return sequence;
 }
 //****************************************************************
 bool node_before_leaf(TArbreBin<string> *node){
@@ -341,16 +345,37 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 	int index_trace_1, index_trace_2;
 	string pair_name;
 
-	//*##### PROTECTION OF LAST TRACE 	#####
-	last_trace = trace_list[trace_list.size()-1];
+	
 
 	//*##### SEARCHING PAIR 			#####
 	pair = new TArbreBin<string>(to_str<float>(score_prec));
 	pair -> fg = new TArbreBin<string>(name_remove);
 	pair -> fd = new TArbreBin<string>(name_kept);
 
+	cout << "# TEST " << trace_list.size() << endl;
+	if(trace_list.size() == 2){
+		print_Type_trace(trace_list[0]);
+		print_Type_trace(trace_list[1]);
+		cout << "LAST PAIR \n";
+		cout << "-";
+		index_trace_1 = 0;
+		index_trace_2 = 1;
+		cout << "-";
+		trace_1 = trace_list[index_trace_1];
+		trace_2 = trace_list[index_trace_2];
+		cout << "-";
+		run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score, gap_start, gap_weight);
+		cout << "-";
+		
+		trace_list[index_trace_1].sequence = trace_align_1.sequence;
+		trace_list[index_trace_2].sequence = trace_align_2.sequence;
+		cout << "-";
+		return trace_list;
+	}
+	//*##### PROTECTION OF LAST TRACE 	#####
+	last_trace = trace_list[trace_list.size()-1];
+
 	//*##### PAIR FOUND: PROJECTION 	#####
-	cout << name_remove << " - " << name_kept << endl;
 	while(i<trace_list.size() && !trouver){
 		if(name_remove == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
 		if(name_kept == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
@@ -371,10 +396,15 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 	print_Type_trace(trace_align_1);
 	print_Type_trace(trace_align_2);*/
 	for(int i=0;i<trace_list.size();i++){
-		if(trace_list[i].header == trace_1.header) {index_trace_1 = i; trace_list[i].sequence = trace_align_1.sequence;}
-		if(trace_list[i].header == trace_2.header) {index_trace_2 = i; trace_list[i].sequence = trace_align_2.sequence;}
+		if(trace_list[i].header == trace_1.header) {index_trace_1 = i; trace_list[i].sequence = trace_align_1.sequence;continue;}
+		if(trace_list[i].header == trace_2.header) {index_trace_2 = i; trace_list[i].sequence = trace_align_2.sequence;continue;}
 	}
-	move(trace_list,index_trace_2,index_trace_1+1);
+
+	cout << trace_list.size() << endl;
+	if(trace_list.size()> 2){
+		//cout << index_trace_1 << " - " << index_trace_2 << endl;
+		move(trace_list,index_trace_2,index_trace_1);
+	}
 
 	//*##### ADD PAIR TO FINAL_TREE #####
 	return trace_list;
@@ -419,8 +449,10 @@ void sort_trace_list(TArbreBin<string>* node,
 	}
 }
 //****************************************************************
-void Multi_Align::multiple_alignment(float seuil, int gap_start, int gap_weight){
-	//##### INIT VAR	#####
+void Multi_Align::multiple_alignment(string file_traces, string file_MSA_output,
+						string file_score_output,
+						float seuil, int gap_start, int gap_weight){
+	//*##### INIT VAR	#####
 	TArbreBin<string> *T,*T_prec, *tree_final, *copy_pair;
 	vector<TArbreBin<string>*> subtrees;
 	vector<string> seq_prec_vector;
@@ -439,7 +471,7 @@ void Multi_Align::multiple_alignment(float seuil, int gap_start, int gap_weight)
 	cout << "- Number of sequences: " << number_of_traces << endl;
 
 	int i = 1;
-	while(i < number_of_traces){ 
+	while(i < number_of_traces-1){ 
 		if(i==1){
 			D = calcul_dissimilarite(trace_list, gap_start, gap_weight);
 		} else { // We have already done a multiline alignment
@@ -450,23 +482,22 @@ void Multi_Align::multiple_alignment(float seuil, int gap_start, int gap_weight)
 		}	
 		//if(difference(D,D_prec) <= seuil){convergence = true; break;}
 		// convergence = false
+		//print_tri_matrix(D);
 		CAH(D, T, score, name_remove, name_kept);
+		//cout << name_remove << " - " << name_kept << endl;
 		if(i<2){
 			T_prec = T;
 			//cout << "================= Affichage alignment multiple ===\n";
 			//T_prec -> printBTS();
 		}
+		//cout << D.size() << " - " << score <<endl;
+		
 		//T ->printBTS();
-		trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, list_aligned, score, name_remove, name_kept, gap_start, gap_weight);
-
-		//trace_align = aligner_sequences_ou_projection(copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
-		//T -> printBTS();
+		trace_align = aligner_sequences_ou_projection(copy_pair, trace_align, list_aligned, score, name_remove, name_kept, gap_start, gap_weight);
 		//*##### BUILD FINAL TREE #####
-		//cout << "================= Affichage arbre ===\n";
-		//copy_pair -> printBTS();	
-		//T ->printBTS();
-		//build_final_tree(subtrees, seq_prec_vector, copy_pair, tree_final, name_remove, name_kept);
-		//tree_final -> printBTS();
+
+		build_final_tree(subtrees, seq_prec_vector, copy_pair, tree_final, name_remove, name_kept);
+
 		//*##### REMOVE ONE TRACE OF THE PAIR WHICH WAS PROJECTED #####
 		//trace_list = trace_align;
 		int cpt = 0;
@@ -488,19 +519,34 @@ void Multi_Align::multiple_alignment(float seuil, int gap_start, int gap_weight)
 	//*###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
 	cout << "================= Affichage arbre complet ===\n";
 	T_prec -> printBTS();
-	//tree_final -> printBTS();
+	tree_final -> printBTS();
 	sort_trace_list(T_prec, list_aligned, trace_align_sorted);
 
 	cout << "================= Affichage alignment multiple ===\n";
-	print_align(trace_align_sorted);
+	cout << print_align(trace_align_sorted, score_final);
 	trace_align = trace_align_sorted;
-	cout << "== Score: " << score_final << endl;
+
+	//*###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
+	this -> export_align(file_traces, file_MSA_output, file_score_output, trace_align_sorted, score_final);
 }
 
 //****************************************************************
 /*
 	Export the alignment in a file with it's metadata.
 */
-void Multi_Align::export_align(string file_name){
+void Multi_Align::export_align(string file_traces, string file_MSA_output,
+				string file_score_output, vector<Type_trace> trace_align_sorted,
+				float score_final){
+	// Create and open a text file
+ 	ofstream MSA_output(file_MSA_output);
+	MSA_output << print_align(trace_align_sorted, score_final);
+	MSA_output.close();
 
+	float score_gap;
+	score_gap = gap_score(trace_align_sorted);
+	ofstream score_ouput(file_score_output);
+	score_ouput << "Input file;" << "score_nw;" << "score_gap\n";
+	score_ouput << file_traces << ';' << to_str<float>(score_final) << ';' << to_str<float>(score_gap);
+
+	score_ouput.close();
 }

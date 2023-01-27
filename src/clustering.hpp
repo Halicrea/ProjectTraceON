@@ -59,7 +59,7 @@ void build_final_tree( vector<TArbreBin<string>*> &subtrees,
 							TArbreBin<string>* pair_copy, TArbreBin<string>* &root,
 							string name_remove, string name_kept);
 
-void CAH(vector<matri> &D, TArbreBin<string>* &root,
+void CAH(vector<matri> D, TArbreBin<string>* &root,
 		float &score, string &name_remove, string &name_kept);
 
 void find_pair_in_tree(TArbreBin<string> *node, TArbreBin<string>* &pair, double &value_max);
@@ -68,6 +68,11 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													vector<Type_trace> trace_list,
 													float &score,
 													string &name_trace_to_remove);
+
+
+//fonction permettant de compter le nombre de gap et d'afficher un score 
+int gap_count(vector<Type_trace> trace_align_sorted);
+float gap_score(vector<Type_trace> trace_align_sorted);
 //***********************  STRUCT DECLARATION *****************************
 
 #endif
