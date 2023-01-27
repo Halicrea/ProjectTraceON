@@ -60,3 +60,7 @@ void build_final_tree( vector<TArbreBin<string>*> &subtrees,
 
 
 #endif
+
+//fonction permettant de compter le nombre de gap et d'afficher un score 
+int gap_count(vector<Type_trace> trace_align_sorted);
+float gap_score(vector<Type_trace> trace_align_sorted, int trace_nb);
