@@ -55,6 +55,15 @@ $$$$$$$$\                                   $$$$$$\                             
    \__|\__|       \_______| \_______|$$$$$$\\______/ \__|       \_______| \_______|  \____/  \_______|
                                      \______|                                                         
 */
+/*
+	Based on each subtrees obtained in the CAH() function it build the Clustering
+	tree of the hierarchical clustering.
+	The return of this function is used to identify easely the complete tree.
+	The parameters subtrees and seq_prec_vector are used for the intermediate
+	step by stocking each subtrees in a vector.
+	seq_prec_vector is a vector for identifying the correct subtrees to
+	aggregate.
+*/
 TArbreBin<string>* build_tree(vector<matri> &D_aux, vector<TArbreBin<string>*> &subtrees,
 								vector<string> &seq_prec_vector,
 								float value, int k, int r){
@@ -122,6 +131,15 @@ TArbreBin<string>* build_tree(vector<matri> &D_aux, vector<TArbreBin<string>*> &
 	return root;
 }
 //******************************************************************************
+/*
+	Based on each subtrees obtained in the aligner_sequences_ou_projection()
+	function, as well as the principal loop from Multi_Align::multiple_alignment(),
+	it will build the final tree. The real return of this function is &root.
+	The parameters subtrees and seq_prec_vector are used for the intermediate
+	step by stocking each subtrees in a vector.
+	seq_prec_vector is a vector for identifying the correct subtrees to
+	aggregate.
+*/
 void build_final_tree( vector<TArbreBin<string>*> &subtrees,
 							vector<string> &seq_prec_vector,
 							TArbreBin<string>* pair_copy, TArbreBin<string>* &root,
@@ -204,6 +222,7 @@ void find_maximum(const vector<matri> &D, int &i_min, int &j_min, float &value){
 	}
 }
 //******************************************************************************
+// Delete a row in a dissimilarity matrix.
 void supprimer_ligne(vector<matri> &D, const int &r){
 	const int n=D.size();	// Number of sequences
 	if (n > r){
@@ -211,6 +230,7 @@ void supprimer_ligne(vector<matri> &D, const int &r){
 	}
 }
 //******************************************************************************
+// Delete a column in a dissimilarity matrix.
 void supprimer_colonne(vector<matri> &D, const int &r){
 	const int n=D.size();	// Number of sequences
 	for (int i = 0; i < n; i++){
@@ -220,8 +240,10 @@ void supprimer_colonne(vector<matri> &D, const int &r){
 	}
 }
 //******************************************************************************
+/*
+	Function use for updating the row in a dissimilarity matrix.
+*/
 float dissim_lign(vector<matri> &D, int i_min, int j_min, int i){
-	//TODO Add explanation
 	const int n=D.size()-1;	// Number of sequences
 	float i_val,j_val;
 	float result;
@@ -235,8 +257,11 @@ float dissim_lign(vector<matri> &D, int i_min, int j_min, int i){
 	return result;
 }
 //******************************************************************************
+/*
+	Function use for updating the column in a dissimilarity matrix.
+	One function wasn't enough for this updating.
+*/
 float dissim_col(vector<matri> &D, int i_min, int j_min, int i, int &i_save){
-	//TODO Add explanation
 	const int n=D.size()-1;	// Number of sequences
 	int index_i, index_j;
 	float i_val,j_val;
@@ -269,8 +294,12 @@ $$ |      $$  __$$ |$$  __$$ |
 $$ |  $$\ $$ |  $$ |$$ |  $$ |
 \$$$$$$  |$$ |  $$ |$$ |  $$ |
  \______/ \__|  \__|\__|  \__|                         
+Algorithm for Hierarchical clustering. It is mostly based on the reduction of 
+a dissimilarity matrix. This function also build the tree of the clustering.
+It output the best score before reduction as well as the names of the
+corresponding pair.
+
 */
-//TODO Needs to add a way to save the tree and print it
 void CAH(vector<matri> D, TArbreBin<string>* &root,
 		float &score, string &name_remove, string &name_kept){
 	int n=D.size();	// Number of sequences

@@ -14,6 +14,10 @@
 using namespace std;
 
 //******************************************************************************
+/*
+	Simple template to transform a float, double or int in a string with
+	at most 2 numbers of precision.
+*/
 template <typename T> string to_str(const T& t) { 
    ostringstream os; 
    os<< t << setprecision(2) ; 
@@ -80,6 +84,8 @@ $$ | \_/ $$ |\$$$$$$$ | \$$$$  |\$$$$$$$\ $$ |  $$ |       $$ |   \$$$$$$  |$$ |
                                                     \______|                          
 */
 //******************************************************************************
+// Compute gap_weigth. An initial gap is costly but inserting following gaps
+// is less costly.
 int gap_weigth(int gap_initial, int gap_penalty, int& gap_length){
 	int gap_value = - gap_initial + (gap_penalty * gap_length);
 	return gap_value;
@@ -96,7 +102,9 @@ int ins(int event, int gap_initial, int gap_penalty, int& gap_length){
 int subst(int event, int event2){
 	int result_subst = 0;
 	if(event == 0 || event2 == 0){
+		// if we match with a ".", it doesn't cost much
 		if(event == event2){
+			// if both are "."
 			return 1;
 		}
 		return -1;
@@ -109,7 +117,7 @@ int subst(int event, int event2){
 	}
 	result_subst = abs((event - event2)/2);
 	if (result_subst == 0){
-		return (4);
+		return (4);	// matching to event is greatly favorised.
 	} else return - result_subst;
 }
 //******************************************************************************
@@ -142,9 +150,10 @@ $$$$$$\           $$\   $$\           $$\      $$\            $$\               
 $$$$$$\ $$ |  $$ |$$ |  \$$$$  |      $$ | \_/ $$ |\$$$$$$$ | \$$$$  |$$ |      $$ |$$  /\$$\ 
 \______|\__|  \__|\__|   \____/$$$$$$\\__|     \__| \_______|  \____/ \__|      \__|\__/  \__|
                                \______|                                                       
-	Initialise and complete scoring.
+	
 */
 //******************************************************************************
+// Initialise and complete scoring for pairwize global alignment.
 void Class_align::init_matrix_align(int n, int m){
 	M[0][0] = 0;
 	M_match[0][0] = 'n';
@@ -181,7 +190,7 @@ $$ |      $$ |      $$ |$$ |  $$ | \$$$$  |      $$ | $$ | $$ |\$$$$$$$ | \$$$$ 
 \__|      \__|      \__|\__|  \__|  \____/$$$$$$\\__| \__| \__| \_______|  \____/ \__|      \__|\__/  \__|
                                           \______|                                                        
 //******************************************************************************
-https://mvdsman.github.io/blog/Simple-pairwise-alignment/*/
+*/
 // Print the traceback matrix or scoring matrix
 template <typename T>
 void  Class_align::print_matrice(int n, int m, T** M){
@@ -219,6 +228,10 @@ $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |  $$ |        $$$$$$$  |\$$$$$$$ |$$ |$$ |
                    \______/                   \__|                              
 */
 //******************************************************************************
+/*
+	Function looking at the "fil de fer" (iron wire) matrix for inserting the
+	gap and updating the sequences of the traces. 
+*/
 void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace_2,
 											vector<int> &Alignment1,vector<int> &Alignment2){
 	//******** INIT VARIABLES ****************
@@ -309,7 +322,8 @@ int word_length(int word){
 		default: return (to_str<int>(word).length());
 	}
 }
-//******************************************************************************
+//*******************************************************************************
+// Translating a element of the sequence of a trace to a string.
 string word_to_string(int word){
 	switch(word){
 		case -1: return "_ ";
@@ -318,6 +332,9 @@ string word_to_string(int word){
 	}
 }
 //******************************************************************************
+/*
+	Function for a readable pairwize alignment.
+*/
 void Class_align::print_Alignment(Type_trace trace1, Type_trace trace2){
 	string alignement1_out = "";
 	string alignement2_out = "";
@@ -375,6 +392,11 @@ void run_align_global(Type_trace &trace_1, Type_trace &trace_2,
 }
 
 //******************************************************************************
+/*
+	WRAPPER for pairwize alignemnt. This procedure output the score and the aligned
+	sequence. It is also useful to initialize the Class_align object as well as
+	the scoring a character matrix.
+*/
 void run_align_global(Type_trace trace_1, Type_trace trace_2,
 						Type_trace &trace_align_1, Type_trace &trace_align_2,
 						vector<Type_trace> &list_cluster, int &score,
@@ -433,6 +455,11 @@ void run_align_global(Type_trace trace_1, Type_trace trace_2,
 }
 
 //******************************************************************************
+/*
+	WRAPPER for pairwize alignemnt. This function output only the score
+	It is also useful to initialize the Class_align object as well as
+	the scoring a character matrix.
+*/
 int run_align_global_score(Type_trace trace_1, Type_trace trace_2,
 							int gap_start, int gap_weight){
 	Type_trace trace_align_1 = trace_1;

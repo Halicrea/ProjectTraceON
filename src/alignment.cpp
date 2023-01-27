@@ -23,6 +23,9 @@ struct tree_ptr{
 
 
 //****************************************************************
+/*
+	Move a value in a vector to a specific index.
+*/
 // https://stackoverflow.com/questions/45447361/how-to-move-certain-elements-of-stdvector-to-a-new-index-within-the-vector
 template <typename t> void move(vector<t>& v, size_t oldIndex, size_t newIndex)
 {
@@ -33,6 +36,9 @@ template <typename t> void move(vector<t>& v, size_t oldIndex, size_t newIndex)
 	}
 }
 //****************************************************************
+/*
+	Find a value in a vector and return the index.
+*/
 template <typename T>
 int finder(vector<Type_trace> list, T val){
 	int i=0;
@@ -44,7 +50,7 @@ int finder(vector<Type_trace> list, T val){
 
 //#################################################################
 /*
-	Affiche un bel arbre.
+	Print a pretty tree.
 	└──A
 		├──B
 		│   ├──R
@@ -103,7 +109,7 @@ $$ | \_/ $$ |\$$$$$$  |$$ |  \$$$$  |$$ |       $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |
 */
 //****************************************************************
 /*
-	Constructor for the classe
+	Constructor for the classe Multi_Align.
 */
 void Multi_Align::init_trace_list(string file_name){
 	vector<string> liste_trace;
@@ -144,6 +150,9 @@ float difference(vector<matri> &D,vector<matri> &D_prec){
 	return distance;
 }
 //****************************************************************
+/*
+	A simple random generator for making dummy triangular matrix.
+*/
 float random_val(){
 	random_device rd;
 	mt19937 gen(rd());
@@ -151,6 +160,9 @@ float random_val(){
 	return distr(gen);
 }
 //****************************************************************
+/*
+	Was used to initialize a triangular matrix.
+*/
 void create_tringular_matrix(vector<matri> &D){
 	int n=D.size();
 	D[0].header = "Seq 1";
@@ -164,6 +176,9 @@ void create_tringular_matrix(vector<matri> &D){
 	}
 }
 //****************************************************************
+/*
+	Can be used to print a triangular lower matrix.
+*/
 void print_tri_matrix(vector<matri> &D){
 	int n=D.size();
 	cout << "Affichage matrice: \n";
@@ -214,6 +229,10 @@ $$ |      $$ |      \$$$$$$  |$$ |\$$$$$$$\ \$$$$$$$\   \$$$$  |$$ |\$$$$$$  |$$
                          \______/                                                                 
 */
 //****************************************************************
+/*
+	Translate the vector of aligned traces to print it in a file
+	or to the terminal.
+*/
 string Multi_Align::print_align(vector<Type_trace> list_aligned, float score_final){
 	int word, word_max, length_seq;
 	string sequence = "";
@@ -245,6 +264,9 @@ string Multi_Align::print_align(vector<Type_trace> list_aligned, float score_fin
 	return sequence;
 }
 //****************************************************************
+/*
+	Check if the node is before two leaves.
+*/
 bool node_before_leaf(TArbreBin<string> *node){
 	if((node -> fg -> fg == NULL) &&
 		(node -> fg -> fd == NULL) &&
@@ -254,6 +276,9 @@ bool node_before_leaf(TArbreBin<string> *node){
 		} else return false;
 }
 //****************************************************************
+/*
+	Searching for the best pair in a tree.
+*/
 void find_pair_in_tree(TArbreBin<string> *node, tree_ptr* &pair, float &value_max){
 	float value;
 	if(node != NULL){
@@ -264,6 +289,13 @@ void find_pair_in_tree(TArbreBin<string> *node, tree_ptr* &pair, float &value_ma
 	}
 }
 //****************************************************************
+/*
+	The role of this function is to find the pair to project, align
+	correctly and keep in memory the score (for the score final) as
+	well as a subtree. This subtree will be used to build the final
+	"phylogenetic" tree. This version work by searching in the tree
+	produced by CAH.
+*/
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													TArbreBin<string>* &copy_pair,
 													vector<Type_trace> trace_list,
@@ -330,6 +362,12 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 }
 
 //****************************************************************
+/*
+	The role of this function is to find the pair to project, align
+	correctly and keep in memory the score (for the score final) as
+	well as a subtree. This subtree will be used to build the final
+	"phylogenetic" tree.
+*/
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 													vector<Type_trace> &trace_list,
 													vector<Type_trace> &list_aligned,
@@ -471,6 +509,10 @@ void Multi_Align::multiple_alignment(string file_traces, string file_MSA_output,
 	cout << "- Number of sequences: " << number_of_traces << endl;
 
 	int i = 1;
+	/* 
+		Loop on the number of traces, but for the last loop it break
+		so the last one isn't align for now.
+	*/
 	while(i < number_of_traces-1){ 
 		if(i==1){
 			D = calcul_dissimilarite(trace_list, gap_start, gap_weight);
