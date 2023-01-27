@@ -25,9 +25,9 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 
 	cout << "Arguments: " << argv[3] << "/" << argv[4] << endl;
 	//Initialize
-	int trace_nb = stoi(argv[4]);
+	int trace_nb = stoi(argv[3]);
 	string trace_output[trace_nb] = {""};
-	int trace_length = stoi(argv[3]);
+	int trace_length = stoi(argv[4]);
 	int nb_block = 0;
 	for(int i=0;i<parameter.length();i++){
 		if(parameter[i] == '(') nb_block++;
@@ -37,7 +37,7 @@ int main(int argc, char *argv[]){ // Use argv to pass the expression as paramete
 	cout << "--Taille bloc" << block_length << endl;
 
 	// We check the number of sequences and this length
-	cout << "Utilisations des paramètres: " << parameter << " de taille: " << trace_nb << " et de longueur: " << trace_length << endl;
+	cout << "Utilisations des paramètres: " << parameter << " de: " << trace_nb << " traces et de longueur: " << trace_length << endl;
 
 
 	// We verify if the first anchor exist (\033[1;31m is used to print error in red)

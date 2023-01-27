@@ -44,5 +44,5 @@ clean:
 	rm -r bin/* obj/*
 
 submit:
-#	rm $(SUBMIT_NAME)
+	rm $(SUBMIT_NAME)
 	tar -czvf $(SUBMIT_NAME) *
