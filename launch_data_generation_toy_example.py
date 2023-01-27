@@ -58,24 +58,6 @@ if len(sys.argv) == 2:
 	subprocess.run(["bin/main_TraceON",expression,"Test.txt",nb_trace,size_trace])
 else:
 	subprocess.run(["bin/main_TraceON",expression,sys.argv[2],nb_trace,size_trace])
-
-
-## Using subprocess to launch the alignment of the traces obtained
-subprocess.run(["bin/main_traceAlign"])
-
-
-## Path of the alignment file generate 
-
-#with open("alignment_generate.txt", "w") as file:
-#	file.write()
-#file.close()
-
-
-## Path of the scores file generate
-
-#with open("scores_generate.csv", "w") as file:
-#	file.write()
-#file.close()
 	
 
 ## Calculation of the execution time of the entire program

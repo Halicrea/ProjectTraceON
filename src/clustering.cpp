@@ -20,6 +20,29 @@ template <typename T> string to_str(const T& t) {
    os<< t << setprecision(2) ; 
    return os.str(); 
 } 
+//****************************************************************
+// Function for counting gaps
+int gap_count(vector<Type_trace> trace_align_sorted) {
+    int count = 0;
+    for (int i = 0; i < trace_align_sorted.size(); i++){
+        if (trace_align_sorted[i].sequence[i]==-1) {
+            count++;
+        }
+    }
+    return count;
+}
+
+//****************************************************************
+/*
+	Function to calculate a gap score based on the number of gaps
+	and length of the MSA.
+*/
+float gap_score(vector<Type_trace> trace_align_sorted) {
+    int score = gap_count(trace_align_sorted);
+    return (float)score / trace_align_sorted.size();
+}
+
+
 //********************************************************************************
 /*
 $$$$$$$$\                                   $$$$$$\                                 $$\               
@@ -274,7 +297,6 @@ void CAH(vector<matri> &D, TArbreBin<string>* &root,
 		*/
 		r = max(i_min,j_min);
 		name_remove = D_aux[r].header;
-		cout << "Where is r ? " << name_remove << '(' << r << ')' << endl;
 		score = value;
 
 

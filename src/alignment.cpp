@@ -125,12 +125,12 @@ void Multi_Align::init_trace_list(string file_name){
 	To calculate the distance between two matrix, and more precisely,
 	the difference between D_prec and D.
 	The number of paris which we can produce from r elements is: r(r-1)/2
+	Problem with this function, making most of the code breaking.
 */
 float difference(vector<matri> &D,vector<matri> &D_prec){
 	cout << "- Calcul difference\n";
 	int distance = 0; // We initialize the distance between the two matrix
 	int n = D.size();
-	//cout << endl;
 	//cout << D[0].ligne[0] << endl;
 	for(int i=1; i<n;i++){
 		//cout << 'i' << i << '-';
@@ -138,7 +138,6 @@ float difference(vector<matri> &D,vector<matri> &D_prec){
 			//cout << D_prec[i].ligne[j] << " % " << D[i].ligne[j];
 			//distance = distance + pow(D_prec[i].ligne[j]-D[i].ligne[j],2);
 		}
-		//cout << endl;
 	}
 	distance = (2*distance)/n*(n-1);
 	distance = sqrt(distance);
@@ -178,7 +177,7 @@ void print_tri_matrix(vector<matri> &D){
 }
 
 //****************************************************************
-vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list){
+vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list, int gap_start, int gap_weight){
 	// Number of sequences:
 	int n = trace_list.size();
 	int score;
@@ -190,7 +189,7 @@ vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list){
 		tri_matrix[i].ligne = vector<float>(i);
 		for(int j=0; j<i;j++){
 			// For each pair we aligned using the Class_align and it's function. It needed two matrix
-			score = run_align_global_score(trace_list[i],trace_list[j]);
+			score = run_align_global_score(trace_list[i],trace_list[j], gap_start, gap_weight);
 			tri_matrix[i].ligne[j] = score;
 			tri_matrix[i].header = trace_list[i].header;
 
@@ -227,21 +226,18 @@ void Multi_Align::print_align(vector<Type_trace> list_aligned){
 		sequence += to_str(length_seq) + "\t";
 		for(int i=0; i<list_aligned[n].sequence.size();i++){
 			for(int j=0;j<list_aligned.size();j++){
-				//words.push_back(trace_align[j].sequence[i]);
+				//words.push_back(trace_align[j].sequence[i]); --> To align properly words, but tendance for corruption
 				word_max = list_aligned[j].sequence[i];
 				if(word_length(word_max) > word_length_max){
 					word_length_max = word_length(word_max);
 				}
 			}
-			//cout << word_length_max << '/';
 			word = list_aligned[n].sequence[i];
 			sequence += word_to_string(word) + ' ';
-			//sequence += ' '*(word_length_max-word_length(word));
+			//sequence += ' '*(word_length_max-word_length(word));   --> To align properly words, but tendance for corruption
 		}
-		//cout << endl;
 		cout << sequence + 'S' << endl;
-		//for(int i=0;i<list_aligned[n].sequence.size();i++) cout << list_aligned[n].sequence[i] << ' ';
-		//cout << endl;
+
 	}
 }
 //****************************************************************
@@ -269,7 +265,8 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													vector<Type_trace> trace_list,
 													vector<Type_trace> &list_aligned,
 													float &score_prec,
-													string &name_remove, string &name_kept){
+													string &name_remove, string &name_kept,
+													int gap_start, int gap_weight){
 	vector<Type_trace> trace_to_align;
 	tree_ptr *pair;
 	float value_max = 0.0;
@@ -279,11 +276,13 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	Type_trace trace_1, trace_2, trace_align_1, trace_align_2, last_trace;
 	int index_trace_1, index_trace_2;
 	string pair_name;
-
+	cout << "------------------\n";
 	//*##### PROTECTION OF LAST TRACE 	#####
 	last_trace = trace_list[trace_list.size()-1];
 
 	pair -> node = new TArbreBin<string>("pomme");
+
+	cout << "------------------\n";
 	//*##### SEARCHING PAIR 			#####
 	find_pair_in_tree(root, pair, value_max);
 
@@ -300,7 +299,8 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	} else if ( trace_2.header == last_trace.header){
 		trace_2.sequence = last_trace.sequence;
 	}
-	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score);
+	cout << "------------------\n";
+	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score, gap_start, gap_weight);
 
 	for(int i=0;i<trace_list.size();i++){
 		if(trace_list[i].header == trace_1.header) {index_trace_1 = i; trace_list[i].sequence = trace_align_1.sequence;}
@@ -330,7 +330,8 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 													vector<Type_trace> &trace_list,
 													vector<Type_trace> &list_aligned,
 													const float &score_prec,
-													string &name_remove, string &name_kept){
+													string &name_remove, string &name_kept,
+													int gap_start, int gap_weight){
 	vector<Type_trace> trace_to_align;
 	float value_max = 0.0;
 	int score, i = 0;
@@ -363,7 +364,7 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 	} else if ( trace_2.header == last_trace.header){
 		trace_2.sequence = last_trace.sequence;
 	}
-	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score);
+	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score, gap_start, gap_weight);
 
 	/*print_Type_trace(trace_1);
 	print_Type_trace(trace_2);
@@ -418,7 +419,7 @@ void sort_trace_list(TArbreBin<string>* node,
 	}
 }
 //****************************************************************
-void Multi_Align::multiple_alignment(float seuil){
+void Multi_Align::multiple_alignment(float seuil, int gap_start, int gap_weight){
 	//##### INIT VAR	#####
 	TArbreBin<string> *T,*T_prec, *tree_final, *copy_pair;
 	vector<TArbreBin<string>*> subtrees;
@@ -438,14 +439,11 @@ void Multi_Align::multiple_alignment(float seuil){
 	cout << "- Number of sequences: " << number_of_traces << endl;
 
 	int i = 1;
-	cout << "# Début boucle\n";
 	while(i < number_of_traces){ 
 		if(i==1){
-			cout << "# Dissimilarity\n";
-			D = calcul_dissimilarite(trace_list);
-			cout << "- Calcul réussi\n";
+			D = calcul_dissimilarite(trace_list, gap_start, gap_weight);
 		} else { // We have already done a multiline alignment
-			D = calcul_dissimilarite(trace_align);
+			D = calcul_dissimilarite(trace_align, gap_start, gap_weight);
 			if(i==number_of_traces-1){
 				trace_align[trace_align.size()-1] = trace_list[number_of_traces-1];
 			}
@@ -453,14 +451,13 @@ void Multi_Align::multiple_alignment(float seuil){
 		//if(difference(D,D_prec) <= seuil){convergence = true; break;}
 		// convergence = false
 		CAH(D, T, score, name_remove, name_kept);
-		cout << "##CAH" << name_remove << " - " << name_kept << endl;
 		if(i<2){
 			T_prec = T;
 			//cout << "================= Affichage alignment multiple ===\n";
 			//T_prec -> printBTS();
 		}
 		//T ->printBTS();
-		trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
+		trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, list_aligned, score, name_remove, name_kept, gap_start, gap_weight);
 
 		//trace_align = aligner_sequences_ou_projection(copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
 		//T -> printBTS();
@@ -476,8 +473,7 @@ void Multi_Align::multiple_alignment(float seuil){
 		while(trace_align[cpt].header != name_remove){
 			cpt++;
 		}
-		cout << cpt << " : " << trace_align.size() << endl;
-		list_aligned.push_back(trace_align[cpt]);
+
 		list_aligned.push_back(trace_align[cpt]);
 		trace_align.erase(trace_align.begin() + cpt);
 		D_prec = D;
@@ -496,29 +492,15 @@ void Multi_Align::multiple_alignment(float seuil){
 	sort_trace_list(T_prec, list_aligned, trace_align_sorted);
 
 	cout << "================= Affichage alignment multiple ===\n";
-	print_align(list_aligned);
+	print_align(trace_align_sorted);
+	trace_align = trace_align_sorted;
 	cout << "== Score: " << score_final << endl;
-}
-
-
-//****************************************************************
-// Function for counting gaps
-int gap_count(vector<Type_trace> trace_align_sorted) {
-    int count = 0;
-    for (int i = 0; i < trace_align_sorted.size(); i++){
-        if (trace_align_sorted[i].sequence[i]==-1) {
-            count++;
-        }
-    }
-    return count;
 }
 
 //****************************************************************
 /*
-	Function to calculate a gap score based on the number of gaps
-	and length of the MSA.
+	Export the alignment in a file with it's metadata.
 */
-float gap_score(vector<Type_trace> trace_align_sorted) {
-    int score = gap_count(trace_align_sorted);
-    return (float)score / trace_align_sorted.size();
+void Multi_Align::export_align(string file_name){
+
 }

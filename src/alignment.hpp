@@ -24,9 +24,9 @@ class Multi_Align{
 			trace_align;
 		}
 		void init_trace_list(string file_name);
-		//vector<int>** calcul_dissimilarite(vector<Type_trace> trace_list);
-		void multiple_alignment(float seuil);
+		void multiple_alignment(float seuil, int gap_start, int gap_weight);
 		void print_align(vector<Type_trace> list_aligned);
+		void export_align(string file_name);
 
 };
 
@@ -59,20 +59,21 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													vector<Type_trace> trace_list,
 													vector<Type_trace> &list_aligned,
 													float &score_prec,
-													string &name_remove, string &name_kept);
+													string &name_remove, string &name_kept,
+													int gap_start, int gap_weight);
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 													vector<Type_trace> &trace_list,
 													vector<Type_trace> &list_aligned,
 													const float &score_prec,
-													string &name_remove, string &name_kept);
+													string &name_remove, string &name_kept,
+													int gap_start, int gap_weight);
 void build_final_tree( vector<TArbreBin<string>*> &subtrees,
 							vector<string> &seq_prec_vector,
 							TArbreBin<string>* pair_copy, TArbreBin<string>* &root,
 							string name_remove, string name_kept);
 
-
-#endif
-
 //fonction permettant de compter le nombre de gap et d'afficher un score 
 int gap_count(vector<Type_trace> trace_align_sorted);
 float gap_score(vector<Type_trace> trace_align_sorted, int trace_nb);
+
+#endif

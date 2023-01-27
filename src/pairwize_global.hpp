@@ -18,11 +18,16 @@ class Class_align{
 	int** M;
 	char** M_match;
 	public:
-		Class_align(Type_trace seq1, Type_trace seq2, int** matrice, char** matrice_fil_de_fer){
+		Class_align(Type_trace seq1, Type_trace seq2,
+					int** matrice, char** matrice_fil_de_fer,
+					int gap_start, int gap_weight){
 			trace_align1 = seq1;
 			trace_align2 = seq2;
 			M = matrice;
 			M_match = matrice_fil_de_fer;
+			gap_initial = gap_start;
+			gap_penalty = gap_weight;
+
 		}
 		void print_Alignment(Type_trace, Type_trace);
 		void init_matrix_align(int n, int m);
@@ -50,10 +55,13 @@ void max(int insert, int delet, int substit, char *ptr, int& gap_length, int& re
 
 template <typename T> std::string to_str(const T& t);
 
-void run_align_global(Type_trace &trace_1, Type_trace &trace_2);
+void run_align_global(Type_trace &trace_1, Type_trace &trace_2,
+						int gap_start, int gap_weight);
 void run_align_global(Type_trace trace_1, Type_trace trace_2,
 						Type_trace &trace_align_1, Type_trace &trace_align_2,
-						std::vector<Type_trace> &list_aligned, int &score);
-int run_align_global_score(Type_trace trace_1, Type_trace trace_2);
+						std::vector<Type_trace> &list_aligned, int &score,
+						int gap_start, int gap_weight);
+int run_align_global_score(Type_trace trace_1, Type_trace trace_2,
+							int gap_start, int gap_weight);
 
 #endif

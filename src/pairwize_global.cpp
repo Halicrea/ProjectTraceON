@@ -269,17 +269,14 @@ void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace
 			} else {
 				Alignment1.push_back(-1);
 				Alignment2.push_back(trace_2.sequence[j-1]);
-				//cout << trace_1.header << "(" << Alignment1.size()<< ')' << "/ " << trace_2.header << endl;
 				if(list_cluster.size() > 0){
 					for(int cpt=0;cpt<list_cluster.size()-1;cpt++){
-						//cout << list_cluster[i].header << '(' << list_cluster[i].sequence.size() << ')' << "/ ";
 						if(Alignment1.size() > list_cluster[cpt].sequence.size()){
 							//list_cluster[cpt].sequence.push_back(-1);
 						} else {
 							list_cluster[cpt].sequence.insert(list_cluster[cpt].sequence.begin()+Alignment1.size(),-1);
 						}
 					}
-					//cout << endl;
 				}
 				j--;
 		}
@@ -345,7 +342,8 @@ void Class_align::print_Alignment(Type_trace trace1, Type_trace trace2){
 }
 
 //***************************************************************************
-void run_align_global(Type_trace &trace_1, Type_trace &trace_2){
+void run_align_global(Type_trace &trace_1, Type_trace &trace_2,
+					int gap_start, int gap_weight){
 	Type_trace trace_align_1 = trace_1;
 	Type_trace trace_align_2 = trace_2;
 	
@@ -359,7 +357,7 @@ void run_align_global(Type_trace &trace_1, Type_trace &trace_2){
 	for(int i=0; i< n+1; i++){
 		M_match[i] = new char [m+1];
 	}
-	Class_align pair_align(trace_1, trace_2, M, M_match);
+	Class_align pair_align(trace_1, trace_2, M, M_match, gap_start, gap_weight);
 	pair_align.init_matrix_align(n,m);
 	pair_align.alignment_global_pairwize(trace_1, trace_2, trace_align_1.sequence, trace_align_2.sequence);
 
@@ -379,7 +377,8 @@ void run_align_global(Type_trace &trace_1, Type_trace &trace_2){
 //******************************************************************************
 void run_align_global(Type_trace trace_1, Type_trace trace_2,
 						Type_trace &trace_align_1, Type_trace &trace_align_2,
-						vector<Type_trace> &list_cluster, int &score){
+						vector<Type_trace> &list_cluster, int &score,
+						int gap_start, int gap_weight){
 	vector<int> pos_gap;
 	vector<Type_trace> list_aligned_alter = list_cluster;						
 	int n = trace_1.sequence.size();
@@ -392,7 +391,7 @@ void run_align_global(Type_trace trace_1, Type_trace trace_2,
 	for(int i=0; i< n+1; i++){
 		M_match[i] = new char [m+1];
 	}
-	Class_align pair_align(trace_1, trace_2, M, M_match);
+	Class_align pair_align(trace_1, trace_2, M, M_match, gap_start, gap_weight);
 	pair_align.init_matrix_align(n,m);
 
 	pair_align.alignment_global_pairwize(trace_1, trace_2, trace_align_1.sequence, trace_align_2.sequence, list_cluster);
@@ -434,7 +433,8 @@ void run_align_global(Type_trace trace_1, Type_trace trace_2,
 }
 
 //******************************************************************************
-int run_align_global_score(Type_trace trace_1, Type_trace trace_2){
+int run_align_global_score(Type_trace trace_1, Type_trace trace_2,
+							int gap_start, int gap_weight){
 	Type_trace trace_align_1 = trace_1;
 	Type_trace trace_align_2 = trace_2;
 	int score = 0;
@@ -449,7 +449,7 @@ int run_align_global_score(Type_trace trace_1, Type_trace trace_2){
 	for(int i=0; i< n+1; i++){
 		M_match[i] = new char [m+1];
 	}
-	Class_align pair_align(trace_1, trace_2, M, M_match);
+	Class_align pair_align(trace_1, trace_2, M, M_match, gap_start, gap_weight);
 	pair_align.init_matrix_align(n,m);
 
 	// The alignment score is the last score of the matrix.
