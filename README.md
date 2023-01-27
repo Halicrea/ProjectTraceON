@@ -41,6 +41,8 @@ Une fois la génération de données effectué vous devrez lancer le deuxième s
 
 L'alignement des séquences se créera dans le fichier "Test_output.txt" et les scores obtenus après alignement dans le fichier "Test_Score.csv".
 
+Pour avoir un fichier pat alignment et un score par fichier, il vous suffit de lancer en premier le script  "lauch_data_generation_ty_example.py [niveau de difficulté] [nom du fichier] [nombre de fichier voulu]" suivi par le lencement du script "lauch_MSA_test.py [nom du fichier précédement rentré] [nom du fichier output] [nom du fichier des scores] [nombre de fichier voulu].
+
 ## Auteurs
 
 - Elyna Bouchereau
