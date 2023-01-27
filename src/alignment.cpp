@@ -516,3 +516,23 @@ void Multi_Align::multiple_alignment(float seuil){
 	print_align(list_aligned);
 	cout << "== Score: " << score_final << endl;
 }
+
+
+//fonction qui compte les gaps
+int gap_count(vector<Type_trace> trace_align_sorted) {
+    int count = 0;
+    for (int i = 0; i < trace_align_sorted.size(); i++){
+        if (trace_align_sorted[i].sequence[i]==-1) {
+            count++;
+        }
+    }
+	//cout << "le gap_count: " << count << endl;
+    return count;
+}
+
+// fonction qui donne la division du nombre de gap par le nombre de sequence total
+float gap_score(vector<Type_trace> trace_align_sorted, int trace_nb) {
+    int score = gap_count(trace_align_sorted);
+	//cout << "le gap_score: " << count << endl;
+    return (float)score / trace_nb;
+}
