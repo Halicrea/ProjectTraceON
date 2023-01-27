@@ -35,6 +35,8 @@ Exemple de syntaxe de génération de trace:
 > E4 < (3-10) E1_3 E2_2 I1 I2 > E5  
 > E1, E2, I1 et I2 doivent apparaître qu'une fois
 
+Une fois la génération de données effectué vous devrez lancer le deuxième script Python: launch_MSA_test.py et c'est celui-ci qui lancera l'alignement des séquences ainsi générées.
+
 ## Auteurs
 
 - Elyna Bouchereau
