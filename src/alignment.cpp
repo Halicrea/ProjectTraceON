@@ -16,7 +16,13 @@
 #include <algorithm>
 #include <random>
 using namespace std;
+//****************		STRUCT				**********************
+struct tree_ptr{
+	TArbreBin<string>* node;
+};
 
+
+//****************************************************************
 // https://stackoverflow.com/questions/45447361/how-to-move-certain-elements-of-stdvector-to-a-new-index-within-the-vector
 template <typename t> void move(vector<t>& v, size_t oldIndex, size_t newIndex)
 {
@@ -26,6 +32,7 @@ template <typename t> void move(vector<t>& v, size_t oldIndex, size_t newIndex)
 		rotate(v.begin() + oldIndex, v.begin() + oldIndex + 1, v.begin() + newIndex + 1);
 	}
 }
+//****************************************************************
 template <typename T>
 int finder(vector<Type_trace> list, T val){
 	int i=0;
@@ -34,10 +41,8 @@ int finder(vector<Type_trace> list, T val){
 	}
 	return list.size()-1;
 }
-struct tree_ptr{
-	TArbreBin<string>* node;
-};
-//****************************************************************
+
+//#################################################################
 /*
 	Affiche un bel arbre.
 	└──A
@@ -47,11 +52,12 @@ struct tree_ptr{
 		└──C
 			└──D
 
-*/
+*///****************************************************************
 template<typename T>
 void TArbreBin<T>::printBTS(){
 	this -> printBTS("",false);
 }
+//****************************************************************
 template<typename T>
 void TArbreBin<T>::printBTS(const string& prefix, bool isLeft){
 	if(this != NULL){
@@ -81,7 +87,7 @@ void print_Type_trace(Type_trace trace){
 
 
 
-//****************************************************************
+//#################################################################
 /*
 $$\      $$\           $$\   $$\     $$\         $$$$$$\  $$\ $$\                     
 $$$\    $$$ |          $$ |  $$ |    \__|       $$  __$$\ $$ |\__|                    
@@ -138,12 +144,14 @@ float difference(vector<matri> &D,vector<matri> &D_prec){
 	distance = sqrt(distance);
 	return distance;
 }
+//****************************************************************
 float random_val(){
 	random_device rd;
 	mt19937 gen(rd());
 	uniform_int_distribution<> distr(1,50);
 	return distr(gen);
 }
+//****************************************************************
 void create_tringular_matrix(vector<matri> &D){
 	int n=D.size();
 	D[0].header = "Seq 1";
@@ -156,6 +164,7 @@ void create_tringular_matrix(vector<matri> &D){
 		}
 	}
 }
+//****************************************************************
 void print_tri_matrix(vector<matri> &D){
 	int n=D.size();
 	cout << "Affichage matrice: \n";
@@ -191,7 +200,7 @@ vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list){
 }
 
 
-//****************************************************************
+//################################################################
 /*
 $$$$$$$\                                                $$\     $$\                               
 $$  __$$\                                               $$ |    \__|                              
@@ -205,6 +214,7 @@ $$ |      $$ |      \$$$$$$  |$$ |\$$$$$$$\ \$$$$$$$\   \$$$$  |$$ |\$$$$$$  |$$
                         \$$$$$$  |                                                                
                          \______/                                                                 
 */
+//****************************************************************
 void Multi_Align::print_align(vector<Type_trace> list_aligned){
 	int word, word_max, length_seq;
 	string sequence;
@@ -258,7 +268,7 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													TArbreBin<string>* &copy_pair,
 													vector<Type_trace> trace_list,
 													vector<Type_trace> &list_aligned,
-													float score_prec,
+													float &score_prec,
 													string &name_remove, string &name_kept){
 	vector<Type_trace> trace_to_align;
 	tree_ptr *pair;
@@ -281,13 +291,10 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	while(i<trace_list.size() && !trouver){
 		if(pair -> node -> fg -> data == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
 		if(pair -> node -> fd -> data == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
-		//if(name_remove == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
-		//if(name_kept == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
 		if(trouver1 && trouver2){trouver = true;}
 		i++;
 	}
 
-	// Because corruption of last trace
 	if(trace_1.header == last_trace.header){
 		trace_1.sequence = last_trace.sequence;
 	} else if ( trace_2.header == last_trace.header){
@@ -302,25 +309,11 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	move(trace_list,index_trace_2,index_trace_1+1);
 
 	//*##### ADD PAIR TO FINAL_TREE #####
-	//copy_pair -> printBTS();
-	//cout << " Create pair\n";
 	copy_pair = pair -> node;
-	//cout << to_str(score) << endl;
-	//copy_pair = new TArbreBin<string>(to_str(score));
-	//cout << copy_pair -> data << " fzoei,f\n";
-	//copy_pair -> fg = new TArbreBin<string>(trace_1.header);
-	//copy_pair -> fd = new TArbreBin<string>(trace_2.header);
-	//copy_pair -> printBTS();
-	
-	//print_Type_trace(trace_1);
+
 	trace_align_1.header = trace_1.header;
-	//print_Type_trace(trace_align_1);
-	/*for(int i=0;i<trace_align_1.sequence.size();i++){
-		if(trace_align_1[i] != trace_1){
 
-		}
-	}*/
-
+	score_prec += score;
 	//*##### RETURN AND DELETE NODE #####
 	name_remove = trace_1.header;
 	name_kept = trace_2.header;
@@ -332,6 +325,7 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	return trace_list;
 }
 
+//****************************************************************
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 													vector<Type_trace> &trace_list,
 													vector<Type_trace> &list_aligned,
@@ -345,7 +339,6 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 	Type_trace trace_1, trace_2, trace_align_1, trace_align_2, last_trace;
 	int index_trace_1, index_trace_2;
 	string pair_name;
-	cluster_trace* pair_trace;
 
 	//*##### PROTECTION OF LAST TRACE 	#####
 	last_trace = trace_list[trace_list.size()-1];
@@ -364,9 +357,6 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 		i++;
 	}
 
-	pair_trace -> trace = trace_2;
-	pair_trace -> next = new cluster_trace;
-	pair_trace -> next ->trace =trace_1;
 	// Because corruption of last trace
 	if(trace_1.header == last_trace.header){
 		trace_1.sequence = last_trace.sequence;
@@ -398,7 +388,7 @@ void insert_gap_by_pair(Type_trace &trace_1, Type_trace &trace_2){
 	}
 }
 
-//****************************************************************
+//##################################################################
 /*
  $$$$$$\                                       $$\      $$\  $$$$$$\   $$$$$$\  
 $$  __$$\                                      $$$\    $$$ |$$  __$$\ $$  __$$\ 
@@ -411,6 +401,7 @@ $$ |  $$\ $$ |  $$ |$$ |      $$   ____|       $$ |\$  /$$ |$$\   $$ |$$ |  $$ |
                                         \______|                                
                                                                                 
 */
+//****************************************************************
 void sort_trace_list(TArbreBin<string>* node,
 					vector<Type_trace> trace_align,
 					vector<Type_trace> &trace_align_sorted){
@@ -427,8 +418,6 @@ void sort_trace_list(TArbreBin<string>* node,
 	}
 }
 //****************************************************************
-// TODO FINISH THIS GODDAMN MOTHERFUCKER
-// le nombre de séquences
 void Multi_Align::multiple_alignment(float seuil){
 	//##### INIT VAR	#####
 	TArbreBin<string> *T,*T_prec, *tree_final, *copy_pair;
@@ -471,16 +460,16 @@ void Multi_Align::multiple_alignment(float seuil){
 			//T_prec -> printBTS();
 		}
 		//T ->printBTS();
-		//trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
+		trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
 
-		trace_align = aligner_sequences_ou_projection(copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
+		//trace_align = aligner_sequences_ou_projection(copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
 		//T -> printBTS();
 		//*##### BUILD FINAL TREE #####
 		//cout << "================= Affichage arbre ===\n";
 		//copy_pair -> printBTS();	
 		//T ->printBTS();
-		build_final_tree(subtrees, seq_prec_vector, copy_pair, tree_final, name_remove, name_kept);
-		tree_final -> printBTS();
+		//build_final_tree(subtrees, seq_prec_vector, copy_pair, tree_final, name_remove, name_kept);
+		//tree_final -> printBTS();
 		//*##### REMOVE ONE TRACE OF THE PAIR WHICH WAS PROJECTED #####
 		//trace_list = trace_align;
 		int cpt = 0;
@@ -489,15 +478,9 @@ void Multi_Align::multiple_alignment(float seuil){
 		}
 		cout << cpt << " : " << trace_align.size() << endl;
 		list_aligned.push_back(trace_align[cpt]);
-		cout << "   dz  \n";
-
-
+		list_aligned.push_back(trace_align[cpt]);
 		trace_align.erase(trace_align.begin() + cpt);
-		trace_align.shrink_to_fit();
-		cout << " ngizenfg \n";
 		D_prec = D;
-		print_Type_trace(trace_align[trace_align.size()-1]);
-		cout << "qeonfq ze\n";
 		score_final += score;
 		cout << "----------- FIN TOUR " << i << endl;
 		i++;
@@ -506,7 +489,7 @@ void Multi_Align::multiple_alignment(float seuil){
 	// We add the final trace to the list of aligned traces.
 	list_aligned.push_back(trace_align[0]);
 
-	//###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
+	//*###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
 	cout << "================= Affichage arbre complet ===\n";
 	T_prec -> printBTS();
 	//tree_final -> printBTS();
@@ -518,7 +501,8 @@ void Multi_Align::multiple_alignment(float seuil){
 }
 
 
-//fonction qui compte les gaps
+//****************************************************************
+// Function for counting gaps
 int gap_count(vector<Type_trace> trace_align_sorted) {
     int count = 0;
     for (int i = 0; i < trace_align_sorted.size(); i++){
@@ -526,13 +510,15 @@ int gap_count(vector<Type_trace> trace_align_sorted) {
             count++;
         }
     }
-	//cout << "le gap_count: " << count << endl;
     return count;
 }
 
-// fonction qui donne la division du nombre de gap par le nombre de sequence total
-float gap_score(vector<Type_trace> trace_align_sorted, int trace_nb) {
+//****************************************************************
+/*
+	Function to calculate a gap score based on the number of gaps
+	and length of the MSA.
+*/
+float gap_score(vector<Type_trace> trace_align_sorted) {
     int score = gap_count(trace_align_sorted);
-	//cout << "le gap_score: " << count << endl;
-    return (float)score / trace_nb;
+    return (float)score / trace_align_sorted.size();
 }

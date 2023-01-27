@@ -13,7 +13,7 @@
 
 using namespace std;
 
-//##################################################################################
+//******************************************************************************
 template <typename T> string to_str(const T& t) { 
    ostringstream os; 
    os<< t << setprecision(2) ; 
@@ -31,7 +31,8 @@ $$$$$$$$\                                  $$\
    \__| \____$$ |$$  ____/  \_______|$$$$$$\\____/ \__|      \_______| \_______| \_______|
        $$\   $$ |$$ |                \______|                                             
        \$$$$$$  |$$ |                                                                     
-        \______/ \__|                                                                     
+        \______/ \__|    
+//******************************************************************************                                                                 
 	This function is used to transform a trace, which is a string, into
 	a struct composed of a header, the trace ID, and a sequence, which
 	is a vector of event.
@@ -78,18 +79,20 @@ $$ | \_/ $$ |\$$$$$$$ | \$$$$  |\$$$$$$$\ $$ |  $$ |       $$ |   \$$$$$$  |$$ |
 \__|     \__| \_______|  \____/  \_______|\__|  \__|$$$$$$\\__|    \______/ \__|  \__|
                                                     \______|                          
 */
-//##################################################################################
+//******************************************************************************
 int gap_weigth(int gap_initial, int gap_penalty, int& gap_length){
 	int gap_value = - gap_initial + (gap_penalty * gap_length);
 	return gap_value;
 }
-//##################################################################################
+//******************************************************************************
 int del(int event, int gap_initial, int gap_penalty, int& gap_length){
 	return gap_weigth(gap_initial, gap_penalty, gap_initial);
 }
+//******************************************************************************
 int ins(int event, int gap_initial, int gap_penalty, int& gap_length){
 	return gap_weigth(gap_initial, gap_penalty, gap_initial);
 }
+//******************************************************************************
 int subst(int event, int event2){
 	int result_subst = 0;
 	if(event == 0 || event2 == 0){
@@ -109,6 +112,7 @@ int subst(int event, int event2){
 		return (4);
 	} else return - result_subst;
 }
+//******************************************************************************
 void max(int insert, int delet, int substit, char *ptr, int& gap_length, int& result){
 	// Need to take in account the length of consecutiv gap
 	if(insert > delet && insert > substit){
@@ -140,6 +144,7 @@ $$$$$$\ $$ |  $$ |$$ |  \$$$$  |      $$ | \_/ $$ |\$$$$$$$ | \$$$$  |$$ |      
                                \______|                                                       
 	Initialise and complete scoring.
 */
+//******************************************************************************
 void Class_align::init_matrix_align(int n, int m){
 	M[0][0] = 0;
 	M_match[0][0] = 'n';
@@ -175,6 +180,7 @@ $$ |      $$ |      $$ |$$ |  $$ | $$ |$$\       $$ | $$ | $$ |$$  __$$ | $$ |$$
 $$ |      $$ |      $$ |$$ |  $$ | \$$$$  |      $$ | $$ | $$ |\$$$$$$$ | \$$$$  |$$ |      $$ |$$  /\$$\ 
 \__|      \__|      \__|\__|  \__|  \____/$$$$$$\\__| \__| \__| \_______|  \____/ \__|      \__|\__/  \__|
                                           \______|                                                        
+//******************************************************************************
 https://mvdsman.github.io/blog/Simple-pairwise-alignment/*/
 // Print the traceback matrix or scoring matrix
 template <typename T>
@@ -212,6 +218,7 @@ $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |  $$ |        $$$$$$$  |\$$$$$$$ |$$ |$$ |
                   \$$$$$$  |                  $$ |                              
                    \______/                   \__|                              
 */
+//******************************************************************************
 void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace_2,
 											vector<int> &Alignment1,vector<int> &Alignment2){
 	//******** INIT VARIABLES ****************
@@ -240,6 +247,7 @@ void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace
 	reverse(Alignment1.begin(), Alignment1.end());
 	reverse(Alignment2.begin(), Alignment2.end());
 }
+//******************************************************************************
 void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace_2,
 											vector<int> &Alignment1,vector<int> &Alignment2,
 											vector<Type_trace> &list_cluster){
@@ -268,7 +276,7 @@ void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace
 						if(Alignment1.size() > list_cluster[cpt].sequence.size()){
 							//list_cluster[cpt].sequence.push_back(-1);
 						} else {
-							//list_cluster[cpt].sequence.insert(list_cluster[cpt].sequence.begin()+Alignment1.size(),-1);
+							list_cluster[cpt].sequence.insert(list_cluster[cpt].sequence.begin()+Alignment1.size(),-1);
 						}
 					}
 					//cout << endl;
@@ -296,6 +304,7 @@ $$ |      $$ |      $$ |$$ |  $$ | \$$$$  |     \$$$$$$$ |$$ |$$ |\$$$$$$$ |$$ |
                                                                   \$$$$$$  |          
                                                                    \______/           
 */
+//******************************************************************************
 int word_length(int word){
 	switch(word){
 		case -1: return 1;
@@ -303,6 +312,7 @@ int word_length(int word){
 		default: return (to_str<int>(word).length());
 	}
 }
+//******************************************************************************
 string word_to_string(int word){
 	switch(word){
 		case -1: return "_ ";
@@ -310,6 +320,7 @@ string word_to_string(int word){
 		default: return 'E' + to_str<int>(word);
 	}
 }
+//******************************************************************************
 void Class_align::print_Alignment(Type_trace trace1, Type_trace trace2){
 	string alignement1_out = "";
 	string alignement2_out = "";
@@ -365,6 +376,7 @@ void run_align_global(Type_trace &trace_1, Type_trace &trace_2){
 	trace_2 = trace_align_2;
 }
 
+//******************************************************************************
 void run_align_global(Type_trace trace_1, Type_trace trace_2,
 						Type_trace &trace_align_1, Type_trace &trace_align_2,
 						vector<Type_trace> &list_cluster, int &score){
@@ -394,9 +406,7 @@ void run_align_global(Type_trace trace_1, Type_trace trace_2,
 		}
 	}
 
-	/*print_Type_trace(trace_align_1);
-	print_Type_trace(trace_align_2);
-	for(int i=1;i<list_cluster.size();i++){
+	/*for(int i=1;i<list_cluster.size();i++){
 		if(list_cluster[i].header != trace_1.header && list_cluster[i].header != trace_2.header){
 			trace_align_1.header = trace_1.header;
 			trace_align_2.header = trace_2.header;
@@ -406,13 +416,12 @@ void run_align_global(Type_trace trace_1, Type_trace trace_2,
 			
 			//pair_align.alignment_global_pairwize(trace_2, list_aligned[i], trace_2.sequence, list_aligned_alter[i].sequence);
 			//print_Type_trace(trace_align_1);
-			print_Type_trace(list_cluster[i]);
+			//print_Type_trace(list_cluster[i]);
 			//print_Type_trace(trace_align_2);
 			//cout << endl;
 		}
 	}*/
-	//pair_align.print_Alignment(trace_align_1,trace_align_2);
-	//cout << "-------------\n\n";
+
 	score = M[n][m];
 
 	// We can then deallocate memory
@@ -424,6 +433,7 @@ void run_align_global(Type_trace trace_1, Type_trace trace_2,
 	delete[] M_match;
 }
 
+//******************************************************************************
 int run_align_global_score(Type_trace trace_1, Type_trace trace_2){
 	Type_trace trace_align_1 = trace_1;
 	Type_trace trace_align_2 = trace_2;
@@ -455,4 +465,3 @@ int run_align_global_score(Type_trace trace_1, Type_trace trace_2){
 	return score;
 }
 
-//***************************************************************************

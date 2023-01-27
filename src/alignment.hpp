@@ -56,9 +56,9 @@ vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list);
 
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													TArbreBin<string>* &copy_pair,
-													vector<Type_trace> &trace_list,
+													vector<Type_trace> trace_list,
 													vector<Type_trace> &list_aligned,
-													const float &score_prec,
+													float &score_prec,
 													string &name_remove, string &name_kept);
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
 													vector<Type_trace> &trace_list,
