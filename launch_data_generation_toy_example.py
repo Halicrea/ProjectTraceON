@@ -19,10 +19,11 @@ print(r"""   ___
 
 
 ## Verify if the number of parameter is correct.
-if (len(sys.argv) != 2 and len(sys.argv) != 3):
+if (len(sys.argv) != 2 and len(sys.argv) != 3 and len(sys.argv) != 4):
 	print("\033[1;31mNeeds at least 1 or 2 parameters:")
 	print("- 1st: Difficulty (1 or 2)")
-	print("- 2nd: File output for trace generation\033[0m")
+	print("- 2nd: File output for trace generation")
+	print("- 3rd: Number of datasets to create. (no .txt for file)\033[0m")
 	exit(1)
 
 
@@ -56,8 +57,12 @@ print(nb_trace,size_trace)
 ## Using subprocess to launch the executable C++ creating the traces
 if len(sys.argv) == 2:
 	subprocess.run(["bin/main_TraceON",expression,"Test.txt",nb_trace,size_trace])
+elif len(sys.argv) == 3:
+	subprocess.run(["bin/main_TraceON",expression,sys.argv[3],nb_trace,size_trace])
 else:
-	subprocess.run(["bin/main_TraceON",expression,sys.argv[2],nb_trace,size_trace])
+	for file in range(int(sys.argv[3])):
+		subprocess.run(["bin/main_TraceON",expression,sys.argv[2]+str(file) +".txt",nb_trace,size_trace])
+
 	
 
 ## Calculation of the execution time of the entire program

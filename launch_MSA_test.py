@@ -47,11 +47,16 @@ match len(sys.argv):
 		subprocess.run(["bin/main_traceAlign", gap_initial, gap_penalty, seuil, Display_tree, sys.argv[1], sys.argv[2],"Test_Score.csv"])
 	case 4:
 		subprocess.run(["bin/main_traceAlign", gap_initial, gap_penalty, seuil, Display_tree, sys.argv[1], sys.argv[2], sys.argv[3]])
+	case 5:
+		for file in range(int(sys.argv[4])):
+			subprocess.run(["bin/main_traceAlign", gap_initial, gap_penalty, seuil, Display_tree, sys.argv[1]+str(file) +".txt", sys.argv[2]+str(file) +".txt", sys.argv[3]+str(file) +".csv"])
+
 	case _:
 		print("\033[1;31mWrong paramter. Up to 3 parameters are needed:")
 		print("- File for traces to align.")
 		print("- File for aligned output traces.")
-		print("- File for score computed.\033[0m")
+		print("- File for score computed.")
+		print("- Number of to align.\033[0m")
 		exit(1)
 
 
