@@ -17,5 +17,9 @@ struct Type_trace{
 	std::string header;
 	std::vector<int> sequence;
 };
+struct cluster_trace{
+	Type_trace trace;
+	cluster_trace* next;
+};
 
 #endif

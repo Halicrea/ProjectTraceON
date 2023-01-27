@@ -53,6 +53,18 @@ string word_to_string(int word);
 float difference(vector<matri> &D,vector<matri> &D_prec);
 vector<matri> calcul_dissimilarite(vector<Type_trace> trace_list);
 
+
+vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
+													TArbreBin<string>* &copy_pair,
+													vector<Type_trace> &trace_list,
+													vector<Type_trace> &list_aligned,
+													const float &score_prec,
+													string &name_remove, string &name_kept);
+vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
+													vector<Type_trace> &trace_list,
+													vector<Type_trace> &list_aligned,
+													const float &score_prec,
+													string &name_remove, string &name_kept);
 void build_final_tree( vector<TArbreBin<string>*> &subtrees,
 							vector<string> &seq_prec_vector,
 							TArbreBin<string>* pair_copy, TArbreBin<string>* &root,

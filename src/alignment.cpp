@@ -206,12 +206,15 @@ $$ |      $$ |      \$$$$$$  |$$ |\$$$$$$$\ \$$$$$$$\   \$$$$  |$$ |\$$$$$$  |$$
                          \______/                                                                 
 */
 void Multi_Align::print_align(vector<Type_trace> list_aligned){
-	int word, word_max;
+	int word, word_max, length_seq;
 	string sequence;
 	int word_length_max = 1;
 	cout << "Taille: " << list_aligned.size() << endl;
+	cout << "NOM SEQ: " << "TAILLE\t" << "SEQUENCE\n";
 	for(int n=0;n<list_aligned.size();n++){
-		sequence = list_aligned[n].header + "\t";
+		sequence = list_aligned[n].header + ' ';
+		length_seq = list_aligned[n].sequence.size();
+		sequence += to_str(length_seq) + "\t";
 		for(int i=0; i<list_aligned[n].sequence.size();i++){
 			for(int j=0;j<list_aligned.size();j++){
 				//words.push_back(trace_align[j].sequence[i]);
@@ -254,7 +257,8 @@ void find_pair_in_tree(TArbreBin<string> *node, tree_ptr* &pair, float &value_ma
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 													TArbreBin<string>* &copy_pair,
 													vector<Type_trace> trace_list,
-													float &score_prec,
+													vector<Type_trace> &list_aligned,
+													float score_prec,
 													string &name_remove, string &name_kept){
 	vector<Type_trace> trace_to_align;
 	tree_ptr *pair;
@@ -277,16 +281,19 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	while(i<trace_list.size() && !trouver){
 		if(pair -> node -> fg -> data == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
 		if(pair -> node -> fd -> data == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
+		//if(name_remove == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
+		//if(name_kept == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
 		if(trouver1 && trouver2){trouver = true;}
 		i++;
 	}
 
+	// Because corruption of last trace
 	if(trace_1.header == last_trace.header){
 		trace_1.sequence = last_trace.sequence;
 	} else if ( trace_2.header == last_trace.header){
 		trace_2.sequence = last_trace.sequence;
 	}
-	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2,score);
+	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score);
 
 	for(int i=0;i<trace_list.size();i++){
 		if(trace_list[i].header == trace_1.header) {index_trace_1 = i; trace_list[i].sequence = trace_align_1.sequence;}
@@ -295,7 +302,16 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	move(trace_list,index_trace_2,index_trace_1+1);
 
 	//*##### ADD PAIR TO FINAL_TREE #####
+	//copy_pair -> printBTS();
+	//cout << " Create pair\n";
 	copy_pair = pair -> node;
+	//cout << to_str(score) << endl;
+	//copy_pair = new TArbreBin<string>(to_str(score));
+	//cout << copy_pair -> data << " fzoei,f\n";
+	//copy_pair -> fg = new TArbreBin<string>(trace_1.header);
+	//copy_pair -> fd = new TArbreBin<string>(trace_2.header);
+	//copy_pair -> printBTS();
+	
 	//print_Type_trace(trace_1);
 	trace_align_1.header = trace_1.header;
 	//print_Type_trace(trace_align_1);
@@ -304,8 +320,8 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 
 		}
 	}*/
-	score_prec += score;
-	//##### RETURN AND DELETE NODE #####
+
+	//*##### RETURN AND DELETE NODE #####
 	name_remove = trace_1.header;
 	name_kept = trace_2.header;
 	pair_name = trace_1.header + trace_2.header;
@@ -313,6 +329,63 @@ vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,
 	//pair -> node -> fd = NULL;
 	//pair -> node -> data = name_kept;
 	//print_Type_trace(trace_list[trace_list.size()-1]);
+	return trace_list;
+}
+
+vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &pair,
+													vector<Type_trace> &trace_list,
+													vector<Type_trace> &list_aligned,
+													const float &score_prec,
+													string &name_remove, string &name_kept){
+	vector<Type_trace> trace_to_align;
+	float value_max = 0.0;
+	int score, i = 0;
+	bool trouver, trouver1, trouver2;
+	trouver = trouver1 = trouver2 = false;
+	Type_trace trace_1, trace_2, trace_align_1, trace_align_2, last_trace;
+	int index_trace_1, index_trace_2;
+	string pair_name;
+	cluster_trace* pair_trace;
+
+	//*##### PROTECTION OF LAST TRACE 	#####
+	last_trace = trace_list[trace_list.size()-1];
+
+	//*##### SEARCHING PAIR 			#####
+	pair = new TArbreBin<string>(to_str<float>(score_prec));
+	pair -> fg = new TArbreBin<string>(name_remove);
+	pair -> fd = new TArbreBin<string>(name_kept);
+
+	//*##### PAIR FOUND: PROJECTION 	#####
+	cout << name_remove << " - " << name_kept << endl;
+	while(i<trace_list.size() && !trouver){
+		if(name_remove == trace_list[i].header){trace_1 = trace_list[i]; trouver1 = true;}
+		if(name_kept == trace_list[i].header){trace_2 = trace_list[i]; trouver2 = true;}
+		if(trouver1 && trouver2){trouver = true;}
+		i++;
+	}
+
+	pair_trace -> trace = trace_2;
+	pair_trace -> next = new cluster_trace;
+	pair_trace -> next ->trace =trace_1;
+	// Because corruption of last trace
+	if(trace_1.header == last_trace.header){
+		trace_1.sequence = last_trace.sequence;
+	} else if ( trace_2.header == last_trace.header){
+		trace_2.sequence = last_trace.sequence;
+	}
+	run_align_global(trace_1,trace_2,trace_align_1,trace_align_2, list_aligned, score);
+
+	/*print_Type_trace(trace_1);
+	print_Type_trace(trace_2);
+	print_Type_trace(trace_align_1);
+	print_Type_trace(trace_align_2);*/
+	for(int i=0;i<trace_list.size();i++){
+		if(trace_list[i].header == trace_1.header) {index_trace_1 = i; trace_list[i].sequence = trace_align_1.sequence;}
+		if(trace_list[i].header == trace_2.header) {index_trace_2 = i; trace_list[i].sequence = trace_align_2.sequence;}
+	}
+	move(trace_list,index_trace_2,index_trace_1+1);
+
+	//*##### ADD PAIR TO FINAL_TREE #####
 	return trace_list;
 }
 
@@ -360,13 +433,12 @@ void Multi_Align::multiple_alignment(float seuil){
 	//##### INIT VAR	#####
 	TArbreBin<string> *T,*T_prec, *tree_final, *copy_pair;
 	vector<TArbreBin<string>*> subtrees;
-	vector<string> seq_prec_vector;		
+	vector<string> seq_prec_vector;
 	trace_align = trace_list;
 	vector<Type_trace> list_aligned, trace_align_sorted;
-	vector<matri> D(trace_list.size());
-	vector<matri> D_prec(trace_list.size());
+	vector<matri> D(trace_list.size()); vector<matri> D_prec(trace_list.size());
 	bool convergence;
-	float score = 0;
+	float score, score_final = 0.0;
 	string name_remove, name_kept;
 	// List of sequences is define in the class
 	// type_alignment is a vector of traces define in the class: trace_align
@@ -391,30 +463,43 @@ void Multi_Align::multiple_alignment(float seuil){
 		}	
 		//if(difference(D,D_prec) <= seuil){convergence = true; break;}
 		// convergence = false
-		CAH(D, T);
+		CAH(D, T, score, name_remove, name_kept);
+		cout << "##CAH" << name_remove << " - " << name_kept << endl;
 		if(i<2){
 			T_prec = T;
 			//cout << "================= Affichage alignment multiple ===\n";
 			//T_prec -> printBTS();
 		}
 		//T ->printBTS();
-		trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, score, name_remove, name_kept);
-		
+		//trace_align = aligner_sequences_ou_projection(T, copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
+
+		trace_align = aligner_sequences_ou_projection(copy_pair, trace_align, list_aligned, score, name_remove, name_kept);
+		//T -> printBTS();
 		//*##### BUILD FINAL TREE #####
 		//cout << "================= Affichage arbre ===\n";
 		//copy_pair -> printBTS();	
 		//T ->printBTS();
-		//build_final_tree(subtrees, seq_prec_vector, copy_pair, tree_final, name_remove, name_kept);
-
+		build_final_tree(subtrees, seq_prec_vector, copy_pair, tree_final, name_remove, name_kept);
+		tree_final -> printBTS();
 		//*##### REMOVE ONE TRACE OF THE PAIR WHICH WAS PROJECTED #####
 		//trace_list = trace_align;
 		int cpt = 0;
 		while(trace_align[cpt].header != name_remove){
 			cpt++;
 		}
+		cout << cpt << " : " << trace_align.size() << endl;
 		list_aligned.push_back(trace_align[cpt]);
+		cout << "   dz  \n";
+
+
 		trace_align.erase(trace_align.begin() + cpt);
+		trace_align.shrink_to_fit();
+		cout << " ngizenfg \n";
 		D_prec = D;
+		print_Type_trace(trace_align[trace_align.size()-1]);
+		cout << "qeonfq ze\n";
+		score_final += score;
+		cout << "----------- FIN TOUR " << i << endl;
 		i++;
 	}
 
@@ -424,10 +509,10 @@ void Multi_Align::multiple_alignment(float seuil){
 	//###### PRINTING THE MULTIPLE TRACES ALIGNEMENT ######
 	cout << "================= Affichage arbre complet ===\n";
 	T_prec -> printBTS();
-	tree_final -> printBTS();
+	//tree_final -> printBTS();
 	sort_trace_list(T_prec, list_aligned, trace_align_sorted);
 
 	cout << "================= Affichage alignment multiple ===\n";
-	print_align(trace_align_sorted);
-	cout << "== Score: " << score << endl;
+	print_align(list_aligned);
+	cout << "== Score: " << score_final << endl;
 }

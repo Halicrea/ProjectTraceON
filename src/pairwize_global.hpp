@@ -13,7 +13,7 @@
 class Class_align{
 	Type_trace trace_align1;
 	Type_trace trace_align2;
-	int gap_initial = 4;
+	int gap_initial = 10;
 	int gap_penalty = 1;
 	int** M;
 	char** M_match;
@@ -26,7 +26,11 @@ class Class_align{
 		}
 		void print_Alignment(Type_trace, Type_trace);
 		void init_matrix_align(int n, int m);
-		void alignment_global_pairwize(std::vector<int> &Alignment1,std::vector<int> &Alignment2);
+		void alignment_global_pairwize(Type_trace trace_1, Type_trace trace_2,
+										std::vector<int> &Alignment1,std::vector<int> &Alignment2);
+		void alignment_global_pairwize(Type_trace trace_1, Type_trace trace_2,
+											std::vector<int> &Alignment1,std::vector<int> &Alignment2,
+											std::vector<Type_trace> &list_aligned);
 		template<typename T>
 		void print_matrice(int n, int m, T** matrix);
 		void run_align_pairwize(Type_trace, Type_trace);
@@ -47,7 +51,9 @@ void max(int insert, int delet, int substit, char *ptr, int& gap_length, int& re
 template <typename T> std::string to_str(const T& t);
 
 void run_align_global(Type_trace &trace_1, Type_trace &trace_2);
-void run_align_global(Type_trace trace_1, Type_trace trace_2, Type_trace &trace_align_1, Type_trace &trace_align_2, int &score);
+void run_align_global(Type_trace trace_1, Type_trace trace_2,
+						Type_trace &trace_align_1, Type_trace &trace_align_2,
+						std::vector<Type_trace> &list_aligned, int &score);
 int run_align_global_score(Type_trace trace_1, Type_trace trace_2);
 
 #endif

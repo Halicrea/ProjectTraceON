@@ -120,7 +120,7 @@ void build_final_tree( vector<TArbreBin<string>*> &subtrees,
 
 	//##### DEBUT #####
 	// If we one of the sequence chosen to pair has been paired before, we had only the new leaf
-	pair_copy ->printBTS();
+	//pair_copy ->printBTS();
 	for(int i=0;i<seq_prec_vector.size();i++){
 		if(name_remove == seq_prec_vector[i]){
 			int cpt=0;
@@ -267,13 +267,15 @@ $$ |  $$\ $$ |  $$ |$$ |  $$ |
  \______/ \__|  \__|\__|  \__|                         
 */
 //TODO Needs to add a way to save the tree and print it
-void CAH(vector<matri> &D, TArbreBin<string>* &root){
+void CAH(vector<matri> &D, TArbreBin<string>* &root,
+		float &score, string &name_remove, string &name_kept){
 	int n=D.size();	// Number of sequences
 	vector<matri> D_aux = D;
 	int i_min,j_min = 0;
 	int k=-1, r;
 	int i_save;
 	float value;
+	score = 0.0;
 	TArbreBin<string>* root_prec;
 	vector<TArbreBin<string>*> subtrees;
 	vector<string> seq_prec_vector;
@@ -284,6 +286,7 @@ void CAH(vector<matri> &D, TArbreBin<string>* &root){
 		find_maximum(D_aux,i_min,j_min, value);
 		
 		k = min(i_min,j_min);
+		name_kept = D_aux[k].header;
 		//cout << "k: " << k << endl;
 		/*
 			Le nouvel item obtenu par agglomération
@@ -291,6 +294,9 @@ void CAH(vector<matri> &D, TArbreBin<string>* &root){
 			dans D_aux mis à jour.
 		*/
 		r = max(i_min,j_min);
+		name_remove = D_aux[r].header;
+		cout << "Where is r ? " << name_remove << '(' << r << ')' << endl;
+		score = value;
 		//cout << "r: " << r << endl;
 		//cout << "& Nom de séquence: " << D_aux[k].header << " et " << D_aux[r].header << endl;
 		//--------------------------------------------------

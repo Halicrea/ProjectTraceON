@@ -58,8 +58,9 @@ void build_final_tree( vector<TArbreBin<string>*> &subtrees,
 							vector<string> &seq_prec_vector,
 							TArbreBin<string>* pair_copy, TArbreBin<string>* &root,
 							string name_remove, string name_kept);
-							
-void CAH(vector<matri> &D, TArbreBin<string>* &root);
+
+void CAH(vector<matri> &D, TArbreBin<string>* &root,
+		float &score, string &name_remove, string &name_kept);
 
 void find_pair_in_tree(TArbreBin<string> *node, TArbreBin<string>* &pair, double &value_max);
 vector<Type_trace> aligner_sequences_ou_projection(TArbreBin<string>* &root,

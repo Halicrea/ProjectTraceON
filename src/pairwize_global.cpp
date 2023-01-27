@@ -104,9 +104,9 @@ int subst(int event, int event2){
 		}
 		return -1;
 	}
-	result_subst = abs(event - event2);
+	result_subst = abs((event - event2)/2);
 	if (result_subst == 0){
-		return (2);
+		return (4);
 	} else return - result_subst;
 }
 void max(int insert, int delet, int substit, char *ptr, int& gap_length, int& result){
@@ -212,25 +212,67 @@ $$ |  $$ |$$ |$$ |\$$$$$$$ |$$ |  $$ |        $$$$$$$  |\$$$$$$$ |$$ |$$ |
                   \$$$$$$  |                  $$ |                              
                    \______/                   \__|                              
 */
-void Class_align::alignment_global_pairwize(vector<int> &Alignment1,vector<int> &Alignment2){
+void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace_2,
+											vector<int> &Alignment1,vector<int> &Alignment2){
 	//******** INIT VARIABLES ****************
-	int i = trace_align1.sequence.size();
-	int j = trace_align2.sequence.size();
+	int i = trace_1.sequence.size();
+	int j = trace_2.sequence.size();
 
 	//******** CREATE THE ALIGNED SEQUENCE ***
 	while(i > 0 || j > 0){
 		if(i>0 && j>0 && (M_match[i][j] == '\\')){
-			Alignment1.push_back(trace_align1.sequence[i-1]);
-			Alignment2.push_back(trace_align2.sequence[j-1]);
+			Alignment1.push_back(trace_1.sequence[i-1]);
+			Alignment2.push_back(trace_2.sequence[j-1]);
 			i--;
 			j--;
 		} else if(i>0 && M_match[i][j] == '|'){
-				Alignment1.push_back(trace_align1.sequence[i-1]);
+				Alignment1.push_back(trace_1.sequence[i-1]);
 				Alignment2.push_back(-1);
 				i--;
 			} else {
 				Alignment1.push_back(-1);
-				Alignment2.push_back(trace_align2.sequence[j-1]);
+				Alignment2.push_back(trace_2.sequence[j-1]);
+				j--;
+		}
+	}
+
+	// Since the two vector were build from the end, we need to reverse them.
+	reverse(Alignment1.begin(), Alignment1.end());
+	reverse(Alignment2.begin(), Alignment2.end());
+}
+void Class_align::alignment_global_pairwize(Type_trace trace_1, Type_trace trace_2,
+											vector<int> &Alignment1,vector<int> &Alignment2,
+											vector<Type_trace> &list_cluster){
+	//******** INIT VARIABLES ****************
+	int i = trace_1.sequence.size();
+	int j = trace_2.sequence.size();
+
+	//******** CREATE THE ALIGNED SEQUENCE ***
+	while(i > 0 || j > 0){
+		if(i>0 && j>0 && (M_match[i][j] == '\\')){
+			Alignment1.push_back(trace_1.sequence[i-1]);
+			Alignment2.push_back(trace_2.sequence[j-1]);
+			i--;
+			j--;
+		} else if(i>0 && M_match[i][j] == '|'){
+				Alignment1.push_back(trace_1.sequence[i-1]);
+				Alignment2.push_back(-1);
+				i--;
+			} else {
+				Alignment1.push_back(-1);
+				Alignment2.push_back(trace_2.sequence[j-1]);
+				//cout << trace_1.header << "(" << Alignment1.size()<< ')' << "/ " << trace_2.header << endl;
+				if(list_cluster.size() > 0){
+					for(int cpt=0;cpt<list_cluster.size()-1;cpt++){
+						//cout << list_cluster[i].header << '(' << list_cluster[i].sequence.size() << ')' << "/ ";
+						if(Alignment1.size() > list_cluster[cpt].sequence.size()){
+							//list_cluster[cpt].sequence.push_back(-1);
+						} else {
+							//list_cluster[cpt].sequence.insert(list_cluster[cpt].sequence.begin()+Alignment1.size(),-1);
+						}
+					}
+					//cout << endl;
+				}
 				j--;
 		}
 	}
@@ -308,7 +350,7 @@ void run_align_global(Type_trace &trace_1, Type_trace &trace_2){
 	}
 	Class_align pair_align(trace_1, trace_2, M, M_match);
 	pair_align.init_matrix_align(n,m);
-	pair_align.alignment_global_pairwize(trace_align_1.sequence, trace_align_2.sequence);
+	pair_align.alignment_global_pairwize(trace_1, trace_2, trace_align_1.sequence, trace_align_2.sequence);
 
 	// We can then deallocate memory
 	for(int i=0; i<n; i++){
@@ -325,7 +367,9 @@ void run_align_global(Type_trace &trace_1, Type_trace &trace_2){
 
 void run_align_global(Type_trace trace_1, Type_trace trace_2,
 						Type_trace &trace_align_1, Type_trace &trace_align_2,
-						int &score){
+						vector<Type_trace> &list_cluster, int &score){
+	vector<int> pos_gap;
+	vector<Type_trace> list_aligned_alter = list_cluster;						
 	int n = trace_1.sequence.size();
 	int m = trace_2.sequence.size();
 	int** M = new int* [n+1];
@@ -338,7 +382,37 @@ void run_align_global(Type_trace trace_1, Type_trace trace_2,
 	}
 	Class_align pair_align(trace_1, trace_2, M, M_match);
 	pair_align.init_matrix_align(n,m);
-	pair_align.alignment_global_pairwize(trace_align_1.sequence, trace_align_2.sequence);
+
+	pair_align.alignment_global_pairwize(trace_1, trace_2, trace_align_1.sequence, trace_align_2.sequence, list_cluster);
+	trace_align_1.header = trace_1.header;
+	trace_align_2.header = trace_2.header;
+	Type_trace trace_1_alt = trace_1;
+	for(int i=0;i<trace_align_1.sequence.size();i++){
+		if(trace_align_1.sequence[i] == -1 && trace_1_alt.sequence[i] != -1){
+			pos_gap.push_back(i);
+			trace_1_alt.sequence.insert(trace_1_alt.sequence.begin()+i,-1);
+		}
+	}
+
+	/*print_Type_trace(trace_align_1);
+	print_Type_trace(trace_align_2);
+	for(int i=1;i<list_cluster.size();i++){
+		if(list_cluster[i].header != trace_1.header && list_cluster[i].header != trace_2.header){
+			trace_align_1.header = trace_1.header;
+			trace_align_2.header = trace_2.header;
+			for(int cpt=0;cpt<pos_gap.size();cpt++){
+				list_cluster[i].sequence.insert(list_cluster[i].sequence.begin()+pos_gap[cpt],-1);
+			}
+			
+			//pair_align.alignment_global_pairwize(trace_2, list_aligned[i], trace_2.sequence, list_aligned_alter[i].sequence);
+			//print_Type_trace(trace_align_1);
+			print_Type_trace(list_cluster[i]);
+			//print_Type_trace(trace_align_2);
+			//cout << endl;
+		}
+	}*/
+	//pair_align.print_Alignment(trace_align_1,trace_align_2);
+	//cout << "-------------\n\n";
 	score = M[n][m];
 
 	// We can then deallocate memory
